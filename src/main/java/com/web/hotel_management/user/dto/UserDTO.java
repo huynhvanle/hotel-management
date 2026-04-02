@@ -1,6 +1,6 @@
-package com.web.hotel_management.auth.dto;
+package com.web.hotel_management.user.dto;
 
-import com.web.hotel_management.auth.entity.User;
+import com.web.hotel_management.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

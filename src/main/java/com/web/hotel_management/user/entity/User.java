@@ -1,4 +1,4 @@
-package com.web.hotel_management.auth.entity;
+package com.web.hotel_management.user.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

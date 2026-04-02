@@ -1,7 +1,7 @@
 package com.web.hotel_management.auth.repository;
 
 import com.web.hotel_management.auth.entity.RefreshToken;
-import com.web.hotel_management.auth.entity.User;
+import com.web.hotel_management.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

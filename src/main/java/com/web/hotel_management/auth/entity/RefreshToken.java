@@ -1,5 +1,6 @@
 package com.web.hotel_management.auth.entity;
 
+import com.web.hotel_management.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;

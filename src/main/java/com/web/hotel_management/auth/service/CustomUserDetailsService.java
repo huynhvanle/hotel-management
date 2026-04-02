@@ -1,7 +1,7 @@
 package com.web.hotel_management.auth.service;
 
-import com.web.hotel_management.auth.entity.User;
-import com.web.hotel_management.auth.repository.UserRepository;
+import com.web.hotel_management.user.entity.User;
+import com.web.hotel_management.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
