@@ -6,9 +6,9 @@ spring:
   application:
     name: hotel-management
   datasource: #mng tạo db nhé
-    url: "jdbc:mysql://localhost:3306/identity_service"
+    url: "jdbc:mysql://localhost:3306/hotel_test"
     username: root
-    password: #add password db
+    password: "@Giangloen123"
   jpa: #tự thay đổi trong db
     hibernate:
       ddl-auto: update
