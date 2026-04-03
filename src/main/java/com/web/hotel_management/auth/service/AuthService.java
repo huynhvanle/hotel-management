@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -77,7 +77,7 @@ public class AuthService {
         RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshTokenString)
                 .orElseThrow(() -> new RuntimeException("Invalid refresh token"));
 
-        if (refreshToken.isExpired() || refreshToken.getRevoked()) {
+        if (refreshToken.isExpired() || refreshToken.isRevoked()) {
             throw new RuntimeException("Refresh token is expired or revoked");
         }
 
@@ -96,10 +96,8 @@ public class AuthService {
                 .build();
     }
 
-    public void logout(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        refreshTokenRepository.deleteByUser(user);
+    public void logout(Integer userId) {
+        refreshTokenRepository.deleteByUserId(userId);
     }
 
     private AuthResponse generateAuthResponse(User user) {
