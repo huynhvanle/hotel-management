@@ -7,13 +7,11 @@ import com.web.hotel_management.user.entity.User;
 import com.web.hotel_management.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -21,8 +19,13 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:4200"})
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private static final String MSG_USER_RETRIEVED = "User retrieved successfully";
+
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public ResponseEntity<UserResponse> getAllUsers() {
@@ -30,7 +33,7 @@ public class UserController {
             List<User> users = userService.getAllUsers();
             List<UserDTO> userDTOs = users.stream()
                     .map(UserDTO::fromEntity)
-                    .collect(Collectors.toList());
+                    .toList();
             return ResponseEntity.ok(UserResponse.builder()
                     .success(true)
                     .message("Users retrieved successfully")
@@ -52,7 +55,7 @@ public class UserController {
             User user = userService.getUserById(id);
             return ResponseEntity.ok(UserResponse.builder()
                     .success(true)
-                    .message("User retrieved successfully")
+                    .message(MSG_USER_RETRIEVED)
                     .user(UserDTO.fromEntity(user))
                     .build());
         } catch (RuntimeException e) {
@@ -72,7 +75,7 @@ public class UserController {
                     .orElseThrow(() -> new RuntimeException("User not found with username: " + username));
             return ResponseEntity.ok(UserResponse.builder()
                     .success(true)
-                    .message("User retrieved successfully")
+                    .message(MSG_USER_RETRIEVED)
                     .user(UserDTO.fromEntity(user))
                     .build());
         } catch (RuntimeException e) {
@@ -92,7 +95,7 @@ public class UserController {
                     .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
             return ResponseEntity.ok(UserResponse.builder()
                     .success(true)
-                    .message("User retrieved successfully")
+                    .message(MSG_USER_RETRIEVED)
                     .user(UserDTO.fromEntity(user))
                     .build());
         } catch (RuntimeException e) {

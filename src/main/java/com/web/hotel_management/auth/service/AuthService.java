@@ -10,7 +10,6 @@ import com.web.hotel_management.user.entity.User;
 import com.web.hotel_management.auth.repository.RefreshTokenRepository;
 import com.web.hotel_management.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,17 +21,21 @@ import java.time.LocalDateTime;
 @Transactional
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private RefreshTokenRepository refreshTokenRepository;
-
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public AuthService(
+            UserRepository userRepository,
+            RefreshTokenRepository refreshTokenRepository,
+            JwtTokenProvider jwtTokenProvider,
+            PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
@@ -56,9 +59,9 @@ public class AuthService {
                 .description(request.getDescription())
                 .build();
 
-        user = userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
-        return generateAuthResponse(user);
+        return generateAuthResponse(savedUser);
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -103,13 +106,13 @@ public class AuthService {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername());
         String refreshTokenString = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
-        RefreshToken refreshToken = RefreshToken.builder()
+        RefreshToken savedRefreshToken = RefreshToken.builder()
                 .token(refreshTokenString)
                 .user(user)
                 .expiryDate(LocalDateTime.now().plusDays(30))
                 .revoked(false)
                 .build();
-        refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(savedRefreshToken);
 
         UserDTO userDTO = UserDTO.fromEntity(user);
         long expiresIn = jwtTokenProvider.getAccessTokenExpiration() / 1000;

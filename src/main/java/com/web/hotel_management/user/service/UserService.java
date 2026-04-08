@@ -4,7 +4,7 @@ import com.web.hotel_management.user.dto.UserUpdateRequest;
 import com.web.hotel_management.user.entity.User;
 import com.web.hotel_management.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +16,11 @@ import java.util.Optional;
 @Transactional
 public class UserService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public Optional<User> findByUsername(String username) {
         return userRepository.findByUsername(username);
@@ -27,7 +30,7 @@ public class UserService {
         return userRepository.findByMail(mail);
     }
 
-    public User getUserById(Integer id) {
+    public User getUserById(@NonNull Integer id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
     }
@@ -72,7 +75,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(Integer id) {
+    public void deleteUser(@NonNull Integer id) {
         userRepository.deleteById(id);
         log.info("User deleted with id: {}", id);
     }

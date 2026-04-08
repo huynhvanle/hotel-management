@@ -6,7 +6,7 @@ import com.web.hotel_management.client.dto.ClientResponse;
 import com.web.hotel_management.client.entity.Client;
 import com.web.hotel_management.client.repository.ClientRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
@@ -17,8 +17,11 @@ import java.time.LocalDateTime;
 @Transactional
 public class ClientService {
 
-    @Autowired
-    private ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
+
+    public ClientService(ClientRepository clientRepository) {
+        this.clientRepository = clientRepository;
+    }
 
     public ClientResponse createClient(ClientCreateRequest request) {
         if (clientRepository.existsByEmail(request.getEmail())) {
@@ -40,13 +43,13 @@ public class ClientService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        client = clientRepository.save(client);
-        log.info("Client created: {}", client.getEmail());
+        Client savedClient = clientRepository.save(client);
+        log.info("Client created: {}", savedClient.getEmail());
 
         return ClientResponse.builder()
                 .success(true)
                 .message("Client created successfully")
-                .client(ClientDTO.fromEntity(client))
+                .client(ClientDTO.fromEntity(savedClient))
                 .build();
     }
 
@@ -61,7 +64,7 @@ public class ClientService {
                 .build();
     }
 
-    public ClientResponse getClientById(Integer id) {
+    public ClientResponse getClientById(@NonNull Integer id) {
         Client client = clientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
 
@@ -87,13 +90,13 @@ public class ClientService {
         client.setNote(request.getNote());
         client.setUpdatedAt(LocalDateTime.now());
 
-        client = clientRepository.save(client);
-        log.info("Client updated: {}", client.getEmail());
+        Client updatedClient = clientRepository.save(client);
+        log.info("Client updated: {}", updatedClient.getEmail());
 
         return ClientResponse.builder()
                 .success(true)
                 .message("Client updated successfully")
-                .client(ClientDTO.fromEntity(client))
+                .client(ClientDTO.fromEntity(updatedClient))
                 .build();
     }
 }
