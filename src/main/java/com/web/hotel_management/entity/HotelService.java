@@ -1,18 +1,22 @@
 package com.web.hotel_management.entity;
+
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Table(name = "room")
+@Table(name = "service")
 @Data
-public class Room {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class HotelService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     private String name;
-    private String type;
     private Double price;
-    private String status; 
+    private String unit;
 
     @ManyToOne
     @JoinColumn(name = "hotelID")

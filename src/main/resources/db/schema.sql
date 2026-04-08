@@ -6,15 +6,14 @@ USE hotel_management_db;
 
 CREATE TABLE User (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    -- Tài khoản đăng nhập (Client có thể null nếu không cần tài khoản hệ thống)
     username VARCHAR(255) UNIQUE, 
     password VARCHAR(255),
-	fullName VARCHAR(255) NOT NULL,
+    fullName VARCHAR(255) NOT NULL,
     idCardNumber VARCHAR(20) UNIQUE,
     address VARCHAR(255),
     mail VARCHAR(255),
     phone VARCHAR(15),
-	role ENUM('ADMIN', 'RECEPTIONIST', 'MANAGER', 'CLIENT') DEFAULT 'CLIENT',
+    role ENUM('ADMIN', 'RECEPTIONIST', 'MANAGER', 'CLIENT') DEFAULT 'CLIENT',
     description VARCHAR(255),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -43,7 +42,9 @@ CREATE TABLE Service (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255),
     unit VARCHAR(255),
-    price DECIMAL(19,2)
+    price DECIMAL(19,2),
+    hotelID INT, 
+    CONSTRAINT fk_service_hotel FOREIGN KEY (hotelID) REFERENCES Hotel(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE Booking (
@@ -52,8 +53,8 @@ CREATE TABLE Booking (
     discount DECIMAL(19,2) DEFAULT 0,
     note VARCHAR(500),
     status ENUM('PENDING', 'CONFIRMED', 'CANCELLED', 'COMPLETED') DEFAULT 'PENDING',
-	clientID INT NOT NULL, -- Người đặt (Role CLIENT)
-    userID INT NOT NULL,   -- Nhân viên thực hiện (Role ADMIN/RECEPTIONIST/MANAGER)
+    clientID INT NOT NULL, 
+    userID INT,   
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_booking_client FOREIGN KEY (clientID) REFERENCES User(id),
     CONSTRAINT fk_booking_staff FOREIGN KEY (userID) REFERENCES User(id)
@@ -75,9 +76,10 @@ CREATE TABLE BookedRoom (
 CREATE TABLE UsedService (
     id INT AUTO_INCREMENT PRIMARY KEY,
     quantity INT,
-    discount DECIMAL(19,2) DEFAULT 0,
+    unitPrice DECIMAL(19,2), 
     serviceID INT,
     bookedRoomID INT,
+    usedTime DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_used_service FOREIGN KEY (serviceID) REFERENCES Service(id),
     CONSTRAINT fk_used_bookedroom FOREIGN KEY (bookedRoomID) REFERENCES BookedRoom(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;

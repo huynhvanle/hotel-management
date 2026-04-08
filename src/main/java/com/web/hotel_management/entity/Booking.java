@@ -14,6 +14,7 @@ public class Booking {
     private LocalDateTime bookingDate;
     private Double totalAmount;
     private Integer userId; 
+    private String customerName;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
     private List<BookedRoom> bookedRooms;

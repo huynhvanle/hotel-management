@@ -1,46 +1,94 @@
 package com.web.hotel_management.service;
 
+import com.web.hotel_management.dto.BookingRequest;
+import com.web.hotel_management.dto.BookingResponse;
+import com.web.hotel_management.dto.RoomResponse;
 import com.web.hotel_management.entity.*;
 import com.web.hotel_management.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class BookingService {
+
     @Autowired
     private BookingRepository bookingRepository;
 
     @Autowired
     private RoomRepository roomRepository;
 
-    @Transactional // Duy Giang nhớ thêm @Transactional để đảm bảo nếu lỗi thì nó ko lưu gì cả
-    public Booking createBooking(Booking booking) {
-        double total = 0;
+    @Autowired
+    private BookedRoomRepository bookedRoomRepository;
+
+    @Transactional
+    public BookingResponse createBooking(BookingRequest request) {
+        Booking booking = new Booking();
         booking.setBookingDate(LocalDateTime.now());
+        booking.setCustomerName(request.getCustomerName());
+        
+        Booking savedBooking = bookingRepository.save(booking);
 
-        for (BookedRoom br : booking.getBookedRooms()) {
-            // 1. Tìm phòng "xịn" từ Database dựa trên ID gửi lên
-            Room room = roomRepository.findById(br.getRoom().getId())
-                    .orElseThrow(() -> new RuntimeException("Không tìm thấy phòng có ID: " + br.getRoom().getId()));
+        List<BookedRoom> bookedRooms = new ArrayList<>();
+        double totalAmount = 0;
 
-            // 2. Gán lại phòng đã tìm thấy vào BookedRoom 
-            br.setRoom(room);
-            br.setBooking(booking);
+        LocalDate start = LocalDate.parse(request.getCheckInDate());
+        LocalDate end = LocalDate.parse(request.getCheckOutDate());
+        long days = ChronoUnit.DAYS.between(start, end);
+        if (days <= 0) days = 1;
 
-            // 3. Tự động đổi trạng thái phòng sang 'BOOKED'
+        for (Integer roomId : request.getRoomIds()) {
+            Room room = roomRepository.findById(roomId)
+                    .orElseThrow(() -> new RuntimeException("Room not found: " + roomId));
+
+            if ("BOOKED".equals(room.getStatus())) {
+                throw new RuntimeException("Room " + roomId + " is already booked");
+            }
+
             room.setStatus("BOOKED");
-            roomRepository.save(room); // Lưu trạng thái mới vào bảng Room
+            roomRepository.save(room);
 
-            // 4. Tính toán tiền dựa trên giá "xịn" trong Database
-            long days = ChronoUnit.DAYS.between(br.getCheckin(), br.getCheckout());
-            if (days <= 0) days = 1; // Nếu đặt trong ngày thì tính 1 ngày
-            total += days * room.getPrice();
+            BookedRoom bookedRoom = new BookedRoom();
+            bookedRoom.setRoom(room);
+            bookedRoom.setBooking(savedBooking);
+            bookedRoom.setPrice(room.getPrice());
+            
+            bookedRoomRepository.save(bookedRoom);
+            bookedRooms.add(bookedRoom);
+
+            totalAmount += room.getPrice() * days;
         }
 
-        booking.setTotalAmount(total);
-        return bookingRepository.save(booking);
+        savedBooking.setBookedRooms(bookedRooms);
+        savedBooking.setTotalAmount(totalAmount);
+        bookingRepository.save(savedBooking);
+
+        BookingResponse response = new BookingResponse();
+        response.setBookingId(savedBooking.getId());
+        response.setCustomerName(savedBooking.getCustomerName());
+        response.setTotalAmount(savedBooking.getTotalAmount());
+        response.setBookingDate(savedBooking.getBookingDate());
+        response.setStatus("SUCCESS");
+
+        List<RoomResponse> roomResponses = bookedRooms.stream().map(br -> {
+            RoomResponse rr = new RoomResponse();
+            rr.setId(br.getRoom().getId());
+            rr.setType(br.getRoom().getType());
+            rr.setPrice(br.getPrice()); 
+            if (br.getRoom().getHotel() != null) {
+                rr.setHotelName(br.getRoom().getHotel().getName());
+            }
+            return rr;
+        }).toList();
+
+        response.setBookedRooms(roomResponses);
+
+        return response;
     }
 }
