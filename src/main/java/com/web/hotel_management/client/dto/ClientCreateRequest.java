@@ -10,21 +10,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ClientRegisterRequest {
-    
-    @NotNull(message = "ID card number is required")
-    private Integer idCardNumber;
-    
+public class ClientCreateRequest {
+
+    @NotBlank(message = "ID card number is required")
+    private String idCardNumber;
+
     @NotBlank(message = "Full name is required")
     private String fullName;
-    
+
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
-    
+
     private String phone;
-    
+
     private String address;
-    
-    private String description;
+
+    private String note;
 }

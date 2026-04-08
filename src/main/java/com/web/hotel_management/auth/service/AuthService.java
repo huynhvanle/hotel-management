@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDateTime;
 
 @Slf4j
@@ -34,26 +35,26 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public AuthResponse register(RegisterRequest request) {
-        // Check if username already exists
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new RuntimeException("Username is already taken");
         }
 
-        // Check if email already exists
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByMail(request.getEmail())) {
             throw new RuntimeException("Email is already registered");
         }
 
-        // Create new user
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setFullName(request.getFullName());
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
-        user.setIdCardNumber(request.getIdCardNumber());
-        user.setAddress(request.getAddress());
-        user.setRole(User.Role.CLIENT);
+        String position = request.getPosition() != null && !request.getPosition().isBlank()
+                ? request.getPosition().trim()
+                : "RECEPTIONIST";
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .fullName(request.getFullName())
+                .position(position)
+                .mail(request.getEmail())
+                .description(request.getDescription())
+                .build();
 
         user = userRepository.save(user);
 
@@ -61,11 +62,9 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        // Find user by username
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("Invalid username or password"));
 
-        // Check password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Invalid username or password");
         }
@@ -85,7 +84,7 @@ public class AuthService {
         String newAccessToken = jwtTokenProvider.generateAccessToken(user.getUsername());
 
         UserDTO userDTO = UserDTO.fromEntity(user);
-        long expiresIn = jwtTokenProvider.getAccessTokenExpiration() / 1000; // Convert to seconds
+        long expiresIn = jwtTokenProvider.getAccessTokenExpiration() / 1000;
 
         return AuthResponse.builder()
                 .accessToken(newAccessToken)
@@ -104,7 +103,6 @@ public class AuthService {
         String accessToken = jwtTokenProvider.generateAccessToken(user.getUsername());
         String refreshTokenString = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
-        // Save refresh token to database
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(refreshTokenString)
                 .user(user)
@@ -114,7 +112,7 @@ public class AuthService {
         refreshTokenRepository.save(refreshToken);
 
         UserDTO userDTO = UserDTO.fromEntity(user);
-        long expiresIn = jwtTokenProvider.getAccessTokenExpiration() / 1000; // Convert to seconds
+        long expiresIn = jwtTokenProvider.getAccessTokenExpiration() / 1000;
 
         return AuthResponse.builder()
                 .accessToken(accessToken)

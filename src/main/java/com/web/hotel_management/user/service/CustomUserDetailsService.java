@@ -1,9 +1,7 @@
 package com.web.hotel_management.user.service;
 
-import com.web.hotel_management.user.dto.UserDTO;
 import com.web.hotel_management.user.entity.User;
 import com.web.hotel_management.user.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
     @Autowired
@@ -25,10 +22,14 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
+        String roleSuffix = user.getPosition() != null && !user.getPosition().isBlank()
+                ? user.getPosition().trim().toUpperCase().replace(' ', '_')
+                : "USER";
+
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()))
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + roleSuffix))
         );
     }
 }

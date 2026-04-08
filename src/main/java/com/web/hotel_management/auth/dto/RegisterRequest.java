@@ -11,27 +11,27 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RegisterRequest {
-    
+
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
     private String username;
-    
+
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
-    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$", 
-             message = "Password must contain at least one letter and one number")
+    @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d@$!%*#?&]{8,}$",
+            message = "Password must contain at least one letter and one number")
     private String password;
-    
+
     @NotBlank(message = "Full name is required")
     private String fullName;
-    
+
+    /** Ánh xạ cột {@code mail} trong {@code tblUser}. */
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
-    
-    private String phone;
-    
-    private String idCardNumber;
-    
-    private String address;
+
+    /** Khớp cột {@code position} trong {@code tblUser}; mặc định có thể set ở service. */
+    private String position;
+
+    private String description;
 }

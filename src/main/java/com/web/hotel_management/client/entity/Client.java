@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
 
+/**
+ * Khách hàng — theo biểu đồ: idCardNumber, fullName, address, phone, email, note.
+ */
 @Entity
-@Table(name = "client")
+@Table(name = "tblClient")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,8 +20,8 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true)
-    private Integer idCardNumber;
+    @Column(unique = true, length = 32)
+    private String idCardNumber;
 
     @Column(nullable = false)
     private String fullName;
@@ -30,7 +33,8 @@ public class Client {
 
     private String phone;
 
-    private String description;
+    @Column(length = 500)
+    private String note;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

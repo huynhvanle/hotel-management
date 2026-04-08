@@ -1,8 +1,8 @@
 package com.web.hotel_management.client.controller;
 
-import com.web.hotel_management.client.dto.ClientAuthResponse;
-import com.web.hotel_management.client.dto.ClientRegisterRequest;
-import com.web.hotel_management.client.service.ClientAuthService;
+import com.web.hotel_management.client.dto.ClientCreateRequest;
+import com.web.hotel_management.client.dto.ClientResponse;
+import com.web.hotel_management.client.service.ClientService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,20 +14,20 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/hotel-management/client")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:4200"})
-public class ClientAuthController {
+public class ClientController {
 
     @Autowired
-    private ClientAuthService clientAuthService;
+    private ClientService clientService;
 
-    @PostMapping("/register")
-    public ResponseEntity<ClientAuthResponse> register(@Valid @RequestBody ClientRegisterRequest request) {
+    @PostMapping("/create")
+    public ResponseEntity<ClientResponse> create(@Valid @RequestBody ClientCreateRequest request) {
         try {
-            ClientAuthResponse response = clientAuthService.registerClient(request);
+            ClientResponse response = clientService.createClient(request);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
-            log.error("Client registration failed: {}", e.getMessage());
+            log.error("Create client failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ClientAuthResponse.builder()
+                    .body(ClientResponse.builder()
                             .success(false)
                             .message(e.getMessage())
                             .build());
@@ -35,14 +35,14 @@ public class ClientAuthController {
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<ClientAuthResponse> getByEmail(@PathVariable String email) {
+    public ResponseEntity<ClientResponse> getByEmail(@PathVariable String email) {
         try {
-            ClientAuthResponse response = clientAuthService.getClientByEmail(email);
+            ClientResponse response = clientService.getClientByEmail(email);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            log.error("Failed to get client: {}", e.getMessage());
+            log.error("Get client by email failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ClientAuthResponse.builder()
+                    .body(ClientResponse.builder()
                             .success(false)
                             .message(e.getMessage())
                             .build());
@@ -50,29 +50,31 @@ public class ClientAuthController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ClientAuthResponse> getById(@PathVariable Integer id) {
+    public ResponseEntity<ClientResponse> getById(@PathVariable Integer id) {
         try {
-            ClientAuthResponse response = clientAuthService.getClientById(id);
+            ClientResponse response = clientService.getClientById(id);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            log.error("Failed to get client: {}", e.getMessage());
+            log.error("Get client by id failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ClientAuthResponse.builder()
+                    .body(ClientResponse.builder()
                             .success(false)
                             .message(e.getMessage())
                             .build());
         }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ClientAuthResponse> update(@PathVariable Integer id, @Valid @RequestBody ClientRegisterRequest request) {
+    @PutMapping("/{id}/update")
+    public ResponseEntity<ClientResponse> update(
+            @PathVariable Integer id,
+            @Valid @RequestBody ClientCreateRequest request) {
         try {
-            ClientAuthResponse response = clientAuthService.updateClient(id, request);
+            ClientResponse response = clientService.updateClient(id, request);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            log.error("Client update failed: {}", e.getMessage());
+            log.error("Update client failed: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ClientAuthResponse.builder()
+                    .body(ClientResponse.builder()
                             .success(false)
                             .message(e.getMessage())
                             .build());

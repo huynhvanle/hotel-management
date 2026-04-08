@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ClientAuthResponse {
+public class ClientResponse {
     private boolean success;
     private String message;
     private ClientDTO client;

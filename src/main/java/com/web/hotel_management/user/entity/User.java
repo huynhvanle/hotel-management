@@ -1,12 +1,11 @@
 package com.web.hotel_management.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user")
+@Table(name = "tblUser")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,53 +17,22 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true, length = 255)
     private String username;
 
     @JsonIgnore
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
 
-    @Column(nullable = false)
+    @Column(name = "fullName", nullable = false, length = 255)
     private String fullName;
 
-    @Column(unique = true)
-    private String idCardNumber;
+    @Column(nullable = false, length = 255)
+    private String position;
 
-    private String address;
+    @Column(name = "mail", length = 255)
+    private String mail;
 
-    @Column(name = "mail")
-    private String email;
-
-    private String phone;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
-
+    @Column(length = 255)
     private String description;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-        if (role == null) {
-            role = Role.CLIENT;
-        }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
-
-    public enum Role {
-        ADMIN, RECEPTIONIST, MANAGER, CLIENT
-    }
 }
