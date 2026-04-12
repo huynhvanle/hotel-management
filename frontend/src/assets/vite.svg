@@ -1,0 +1,10 @@
+import { jsxDEV } from "react/jsx-dev-runtime";
+export { jsxDEV as Fragment } from "react/jsx-dev-runtime";
+const jsx = (code, _, ...args) => jsxDEV(code, _, ...args);
+export default jsx(<svg id="vite" style="enable-background:new 0 0 100 100" version="1.1" viewBox="0 0 100 100" x="0px" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" y="0px">
+<path d="M31.3,83.2H5.6l16.3-61l-5.2,5.2c-0.8,0.8-2.1,0.8-2.8,0l-5.2-5.2c-0.8-0.8-0.8-2.1,0-2.8l24.4-24.4
+ c0.8-0.8,2.1-0.8,2.8,0l5.2,5.2c0.8,0.8,0.8,2.1,0,2.8l-4.9,4.9l-0.2,0.7l34.9-34.9c0.8-0.8,2.1-0.8,2.8,0l4.7,4.7
+ c0.8,0.8,0.8,2.1,0,2.8L35.3,83.2z" fill="#646cff" stroke="#646cff" stroke-linejoin="round" stroke-width="5"></path>
+</svg>);
+export const url = "/vite.svg";
+export const defaultExport = jsx;
