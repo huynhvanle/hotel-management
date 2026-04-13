@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hotel Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body>
+    <header class="navbar navbar-expand-lg navbar-dark bg-transparent position-absolute w-100 z-3">
+      <div class="container py-2">
+        <a class="navbar-brand fw-semibold" href="./index.html">Hotel</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <nav class="collapse navbar-collapse" id="nav">
+          <ul class="navbar-nav ms-auto gap-lg-2">
+            <li class="nav-item"><a class="nav-link active" href="./index.html">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link" href="./room-types.html">Hạng phòng</a></li>
+            <li class="nav-item"><a class="nav-link" href="#tien-nghi">Tiện nghi</a></li>
+            <li class="nav-item"><a class="nav-link" href="#lien-he">Liên hệ</a></li>
+            <li class="nav-item ms-lg-2">
+              <a class="btn btn-outline-light btn-sm px-3" href="./room.html">Đặt phòng</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content text-center text-white">
+          <div class="mb-2 text-uppercase hero-kicker">Live · Oriental · Heritage</div>
+          <h1 class="display-3 fw-semibold mb-3">Hanoi Hotel</h1>
+          <p class="lead mb-4 opacity-90">Trải nghiệm lưu trú tinh tế, thuận tiện và ấm cúng.</p>
+
+          <div id="dat-phong" class="booking-bar card shadow-lg border-0">
+            <div class="card-body p-3 p-lg-4">
+              <form id="searchForm" class="row g-3 align-items-end">
+                <div class="col-12 col-md-3">
+                  <label class="form-label">Ngày nhận phòng</label>
+                  <input class="form-control" type="date" name="checkin" required />
+                </div>
+                <div class="col-12 col-md-3">
+                  <label class="form-label">Ngày trả phòng</label>
+                  <input class="form-control" type="date" name="checkout" required />
+                </div>
+                <div class="col-6 col-md-2">
+                  <label class="form-label">Loại phòng</label>
+                  <select class="form-select" name="type">
+                    <option value="">Tất cả</option>
+                    <option value="Standard">Standard</option>
+                    <option value="Deluxe">Deluxe</option>
+                    <option value="Suite">Suite</option>
+                  </select>
+                </div>
+                <div class="col-6 col-md-2">
+                  <label class="form-label">Giá tối đa</label>
+                  <input class="form-control" type="number" name="maxPrice" min="0" placeholder="VD: 1500000" />
+                </div>
+                <div class="col-12 col-md-2 d-grid">
+                  <button class="btn btn-primary" type="submit">Tìm phòng</button>
+                </div>
+              </form>
+              <div id="searchHint" class="small text-muted mt-2"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-5" id="tien-nghi">
+        <div class="container">
+          <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+              <h2 class="fw-semibold mb-3">Tiện nghi nổi bật</h2>
+              <p class="text-muted mb-4">
+                Wi‑Fi miễn phí, dịch vụ phòng, giặt ủi, minibar, hỗ trợ lễ tân… Tất cả được thiết kế để bạn thấy thoải mái.
+              </p>
+              <div class="row g-3">
+                <div class="col-6"><div class="feature-card p-3">Wi‑Fi</div></div>
+                <div class="col-6"><div class="feature-card p-3">Minibar</div></div>
+                <div class="col-6"><div class="feature-card p-3">Giặt ủi</div></div>
+                <div class="col-6"><div class="feature-card p-3">Lễ tân 24/7</div></div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="mock-photo rounded-4"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="py-5 bg-light" id="lien-he">
+        <div class="container">
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <h2 class="fw-semibold mb-3">Liên hệ</h2>
+              <p class="text-muted mb-0">
+                Email: contact@hotel.local<br />
+                Hotline: 0123 456 789<br />
+                Địa chỉ: Hà Nội, Việt Nam
+              </p>
+            </div>
+            <div class="col-lg-6">
+              <div class="alert alert-info mb-0">
+                Demo student project: giao diện tĩnh + gọi API phòng/đặt phòng.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/app.js?v=20260413b"></script>
+  </body>
+</html>

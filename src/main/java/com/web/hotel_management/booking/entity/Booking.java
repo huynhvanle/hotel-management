@@ -6,13 +6,12 @@ import com.web.hotel_management.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "tblBooking")
+@Table(name = "Booking")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -26,19 +25,18 @@ public class Booking {
 
     private LocalDate bookingDate;
 
-    @Column(precision = 19, scale = 2)
-    private BigDecimal totalPrice;
+    private Double discount;
 
     @Column(length = 500)
     private String note;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "client_id")
+    @JoinColumn(name = "clientID")
     private Client client;
 
     /** Nhân viên xử lý đặt phòng — {@code employee} trong biểu đồ. */
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userID")
     private User employee;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)

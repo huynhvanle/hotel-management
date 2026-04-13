@@ -10,8 +10,6 @@ import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import jakarta.transaction.Transactional;
 
-import java.time.LocalDateTime;
-
 @Slf4j
 @Service
 @Transactional
@@ -38,9 +36,7 @@ public class ClientService {
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .address(request.getAddress())
-                .note(request.getNote())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .description(request.getDescription())
                 .build();
 
         Client savedClient = clientRepository.save(client);
@@ -87,8 +83,7 @@ public class ClientService {
         client.setEmail(request.getEmail());
         client.setPhone(request.getPhone());
         client.setAddress(request.getAddress());
-        client.setNote(request.getNote());
-        client.setUpdatedAt(LocalDateTime.now());
+        client.setDescription(request.getDescription());
 
         Client updatedClient = clientRepository.save(client);
         log.info("Client updated: {}", updatedClient.getEmail());

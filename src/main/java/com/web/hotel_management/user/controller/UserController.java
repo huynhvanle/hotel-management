@@ -1,6 +1,7 @@
 package com.web.hotel_management.user.controller;
 
 import com.web.hotel_management.user.dto.UserDTO;
+import com.web.hotel_management.user.dto.UserCreateRequest;
 import com.web.hotel_management.user.dto.UserResponse;
 import com.web.hotel_management.user.dto.UserUpdateRequest;
 import com.web.hotel_management.user.entity.User;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/hotel-management/user")
+@RequestMapping("/user")
 @CrossOrigin(origins = {"http://localhost:3000", "http://localhost:4200"})
 public class UserController {
 
@@ -42,6 +43,26 @@ public class UserController {
         } catch (Exception e) {
             log.error("Failed to get all users: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(UserResponse.builder()
+                            .success(false)
+                            .message(e.getMessage())
+                            .build());
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserCreateRequest request) {
+        try {
+            User created = userService.createUser(request);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(UserResponse.builder()
+                            .success(true)
+                            .message("User created successfully")
+                            .user(UserDTO.fromEntity(created))
+                            .build());
+        } catch (RuntimeException e) {
+            log.error("Failed to create user: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(UserResponse.builder()
                             .success(false)
                             .message(e.getMessage())

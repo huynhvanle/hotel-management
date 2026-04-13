@@ -5,10 +5,8 @@ import com.web.hotel_management.hotel.entity.Hotel;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
-@Table(name = "tblRoom")
+@Table(name = "Room")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,21 +15,20 @@ import java.math.BigDecimal;
 public class Room {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    @Column(length = 255)
+    private String id;
 
     private String name;
 
     private String type;
 
-    @Column(precision = 19, scale = 2)
-    private BigDecimal price;
+    private Double price;
 
     @Column(length = 500)
     private String description;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "hotel_id")
+    @JoinColumn(name = "hotelID")
     @JsonIgnore
     private Hotel hotel;
 }

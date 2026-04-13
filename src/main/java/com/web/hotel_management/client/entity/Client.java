@@ -2,13 +2,12 @@ package com.web.hotel_management.client.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
 
 /**
- * Khách hàng — theo biểu đồ: idCardNumber, fullName, address, phone, email, note.
+ * Khách hàng — theo ERD: idCardNumber, fullName, address, phone, email, description.
  */
 @Entity
-@Table(name = "tblClient")
+@Table(name = "Client")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,8 +19,8 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(unique = true, length = 32)
-    private String idCardNumber;
+    @Column(unique = true)
+    private Long idCardNumber;
 
     @Column(nullable = false)
     private String fullName;
@@ -34,22 +33,5 @@ public class Client {
     private String phone;
 
     @Column(length = 500)
-    private String note;
-
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    private String description;
 }

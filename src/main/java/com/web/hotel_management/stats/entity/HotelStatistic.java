@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 /** Thống kê theo khách sạn (mở rộng khái niệm Hotel trong biểu đồ). */
 @Entity
-@Table(name = "tblHotelStat")
+@Table(name = "HotelStat")
 @Getter
 @Setter
 @NoArgsConstructor

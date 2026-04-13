@@ -9,7 +9,7 @@ import java.math.BigDecimal;
  * Dịch vụ add-on (minibar, giặt...) — bảng {@code tblService} trong biểu đồ (tên class tránh xung đột với {@code org.springframework.stereotype.Service}).
  */
 @Entity
-@Table(name = "tblService")
+@Table(name = "Service")
 @Getter
 @Setter
 @NoArgsConstructor

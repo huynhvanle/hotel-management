@@ -5,11 +5,10 @@ import com.web.hotel_management.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "tblBill")
+@Table(name = "Bill")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,21 +22,19 @@ public class Bill {
 
     private LocalDate paymentDate;
 
-    @Column(precision = 19, scale = 2)
-    private BigDecimal paymentAmount;
+    private Double paymentAmount;
 
-    @Column(length = 50)
-    private String paymentType;
+    private Integer paymentType;
 
     @Column(length = 500)
     private String note;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "booking_id")
+    @JoinColumn(name = "bookingID")
     private Booking booking;
 
     /** Lễ tân / nhân viên thu tiền — {@code receptionist} trong biểu đồ. */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "receptionist_id")
+    @JoinColumn(name = "userID")
     private User receptionist;
 }

@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hạng phòng</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand fw-semibold" href="./index.html">Hotel</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="nav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="./index.html">Trang chủ</a></li>
+            <li class="nav-item"><a class="nav-link active" href="./room-types.html">Hạng phòng</a></li>
+            <li class="nav-item"><a class="nav-link" href="./rooms.html">Danh sách phòng</a></li>
+            <li class="nav-item ms-lg-2"><a class="btn btn-primary btn-sm" href="./room.html">Đặt phòng</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+        <div>
+          <h1 class="h3 mb-1 fw-semibold">Hạng phòng</h1>
+          <div class="text-muted">Giới thiệu các loại hạng phòng hiện có.</div>
+        </div>
+        <a class="btn btn-outline-secondary" href="./rooms.html">Xem danh sách phòng</a>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="room-card-hero"></div>
+            <div class="card-body">
+              <h2 class="h5 fw-semibold mb-2">Standard</h2>
+              <p class="text-muted mb-3">Phòng tiêu chuẩn, đầy đủ tiện nghi cơ bản, phù hợp 1-2 người.</p>
+              <ul class="text-muted small mb-3">
+                <li>Diện tích vừa</li>
+                <li>Giá tốt</li>
+                <li>Phù hợp đi công tác</li>
+              </ul>
+              <div class="d-grid">
+                <a class="btn btn-outline-primary" href="./room-type-detail.html?type=Standard">Xem phòng Standard</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="room-card-hero"></div>
+            <div class="card-body">
+              <h2 class="h5 fw-semibold mb-2">Deluxe</h2>
+              <p class="text-muted mb-3">Không gian rộng hơn, tiện nghi nâng cấp, trải nghiệm thoải mái.</p>
+              <ul class="text-muted small mb-3">
+                <li>Rộng rãi hơn</li>
+                <li>View/ban công (tuỳ phòng)</li>
+                <li>Phù hợp nghỉ dưỡng</li>
+              </ul>
+              <div class="d-grid">
+                <a class="btn btn-outline-primary" href="./room-type-detail.html?type=Deluxe">Xem phòng Deluxe</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="room-card-hero"></div>
+            <div class="card-body">
+              <h2 class="h5 fw-semibold mb-2">Suite</h2>
+              <p class="text-muted mb-3">Hạng cao cấp, không gian lớn, phù hợp gia đình/đặc biệt.</p>
+              <ul class="text-muted small mb-3">
+                <li>Không gian lớn</li>
+                <li>Tiện nghi cao cấp</li>
+                <li>Trải nghiệm premium</li>
+              </ul>
+              <div class="d-grid">
+                <a class="btn btn-outline-primary" href="./room-type-detail.html?type=Suite">Xem phòng Suite</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info mt-4 mb-0">
+        Bấm <b>Đặt phòng</b> để chọn phòng cụ thể và thực hiện đặt phòng.
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

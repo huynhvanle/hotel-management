@@ -23,8 +23,9 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
         String roleSuffix = user.getPosition() != null && !user.getPosition().isBlank()
-                ? user.getPosition().trim().toUpperCase().replace(' ', '_')
+                ? user.getPosition().trim().toUpperCase()
                 : "USER";
+        roleSuffix = "ADMIN".equals(roleSuffix) ? "ADMIN" : "USER";
 
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),

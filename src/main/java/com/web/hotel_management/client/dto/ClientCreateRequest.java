@@ -12,8 +12,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ClientCreateRequest {
 
-    @NotBlank(message = "ID card number is required")
-    private String idCardNumber;
+    @NotNull(message = "ID card number is required")
+    @Positive(message = "ID card number must be positive")
+    private Long idCardNumber;
 
     @NotBlank(message = "Full name is required")
     private String fullName;
@@ -26,5 +27,5 @@ public class ClientCreateRequest {
 
     private String address;
 
-    private String note;
+    private String description;
 }

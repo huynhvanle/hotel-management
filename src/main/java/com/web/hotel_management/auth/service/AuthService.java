@@ -47,8 +47,8 @@ public class AuthService {
         }
 
         String position = request.getPosition() != null && !request.getPosition().isBlank()
-                ? request.getPosition().trim()
-                : "RECEPTIONIST";
+                ? request.getPosition().trim().toUpperCase()
+                : "USER";
 
         User user = User.builder()
                 .username(request.getUsername())

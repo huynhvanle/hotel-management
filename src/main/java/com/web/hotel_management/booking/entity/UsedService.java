@@ -4,10 +4,8 @@ import com.web.hotel_management.catalog.entity.ServiceProduct;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-
 @Entity
-@Table(name = "tblUsedService")
+@Table(name = "UsedService")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,15 +18,14 @@ public class UsedService {
     private Integer id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "service_id")
+    @JoinColumn(name = "serviceID")
     private ServiceProduct service;
 
     private Integer quantity;
 
-    @Column(precision = 19, scale = 2)
-    private BigDecimal totalPrice;
+    private Double discount;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "booked_room_id")
+    @JoinColumn(name = "bookedRoomID")
     private BookedRoom bookedRoom;
 }

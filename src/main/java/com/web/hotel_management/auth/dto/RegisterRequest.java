@@ -30,7 +30,12 @@ public class RegisterRequest {
     @Email(message = "Email must be valid")
     private String email;
 
-    /** Khớp cột {@code position} trong {@code tblUser}; mặc định có thể set ở service. */
+    /**
+     * Role (khớp cột {@code position}).
+     * Chỉ cho phép: USER hoặc ADMIN. Nếu bỏ trống thì mặc định USER.
+     */
+    @Pattern(regexp = "^(?i)(USER|ADMIN)?$",
+            message = "Position must be USER or ADMIN")
     private String position;
 
     private String description;

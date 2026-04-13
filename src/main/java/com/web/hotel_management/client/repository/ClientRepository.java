@@ -13,7 +13,7 @@ public interface ClientRepository extends JpaRepository<Client, Integer> {
 
     boolean existsByEmail(String email);
 
-    Optional<Client> findByIdCardNumber(String idCardNumber);
+    Optional<Client> findByIdCardNumber(Long idCardNumber);
 
-    boolean existsByIdCardNumber(String idCardNumber);
+    boolean existsByIdCardNumber(Long idCardNumber);
 }

@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface RoomStatisticRepository extends JpaRepository<RoomStatistic, Integer> {
 
-    List<RoomStatistic> findByRoom_Id(Integer roomId);
+    List<RoomStatistic> findByRoom_Id(String roomId);
 }

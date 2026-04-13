@@ -40,9 +40,30 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/hotel-management/auth/**").permitAll()
-                .requestMatchers("/hotel-management/hotels/**").permitAll()
-                .requestMatchers("/hotel-management/rooms/**").permitAll()
+                // Note: with server.servlet.context-path=/hotel-management, matchers should NOT include it.
+                .requestMatchers("/auth/**").permitAll()
+                // Self profile endpoints for any authenticated user
+                .requestMatchers("/me/**").authenticated()
+                // Only ADMIN can manage users via REST
+                .requestMatchers("/user/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // Staff APIs for USER + ADMIN
+                .requestMatchers("/api/staff/**").authenticated()
+                .requestMatchers(
+                        "/",
+                        "/index.html",
+                        "/room-types.html",
+                        "/room-type-detail.html",
+                        "/rooms.html",
+                        "/room.html",
+                        "/admin",
+                        "/admin/**",
+                        "/staff/**",
+                        "/uploads/**",
+                        "/assets/**"
+                ).permitAll()
+                .requestMatchers("/api/**").permitAll()
+                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
