@@ -42,7 +42,17 @@ async function api(path, opts = {}) {
   const isJson = (res.headers.get("content-type") || "").includes("application/json");
   const payload = isJson ? await res.json() : await res.text();
   if (!res.ok) {
-    const msg = payload?.message || payload || `HTTP ${res.status}`;
+    let msg = `HTTP ${res.status}`;
+    if (typeof payload === "string") msg = payload || msg;
+    else if (payload && typeof payload === "object") {
+      msg = payload.message || payload.error || msg;
+      if (payload.errors && typeof payload.errors === "object") {
+        const details = Object.entries(payload.errors)
+          .map(([k, v]) => `${k}: ${v}`)
+          .join(", ");
+        msg = details ? `${msg} (${details})` : msg;
+      }
+    }
     throw new Error(msg);
   }
   return payload;

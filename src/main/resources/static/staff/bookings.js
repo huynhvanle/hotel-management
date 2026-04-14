@@ -16,8 +16,71 @@ async function initBookingsPage(apiFn) {
   const bkNote = document.querySelector("#bkNote");
   const brTbody = document.querySelector("#bookedRoomsTbody");
 
+  const billMeta = document.querySelector("#billMeta");
+  const billAlert = document.querySelector("#billAlert");
+  const billPaymentDate = document.querySelector("#billPaymentDate");
+  const billPaymentType = document.querySelector("#billPaymentType");
+  const billAmount = document.querySelector("#billAmount");
+  const billNote = document.querySelector("#billNote");
+  const btnSaveBill = document.querySelector("#btnSaveBill");
+  const btnDeleteBill = document.querySelector("#btnDeleteBill");
+
+  let currentBookingId = null;
+  let currentBill = null;
+
   function safe(v, fallback = "—") {
     return v === null || v === undefined || v === "" ? fallback : String(v);
+  }
+
+  function todayStr() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function setBillAlert(msg) {
+    if (!billAlert) return;
+    if (!msg) {
+      billAlert.classList.add("d-none");
+      billAlert.textContent = "";
+      return;
+    }
+    billAlert.textContent = msg;
+    billAlert.classList.remove("d-none");
+  }
+
+  async function refreshBillCalc() {
+    if (!currentBookingId) return;
+    try {
+      const amount = await apiFn(`/api/staff/bills/calc?bookingId=${encodeURIComponent(currentBookingId)}`);
+      if (billAmount) billAmount.value = amount ?? 0;
+    } catch {
+      // ignore
+    }
+  }
+
+  async function loadBillForBooking(bookingId) {
+    currentBill = null;
+    currentBookingId = Number(bookingId);
+    setBillAlert(null);
+
+    if (billMeta) billMeta.textContent = "—";
+    if (btnDeleteBill) btnDeleteBill.classList.add("d-none");
+    if (billPaymentDate) billPaymentDate.value = todayStr();
+    if (billPaymentType) billPaymentType.value = "0";
+    if (billNote) billNote.value = "";
+    await refreshBillCalc();
+
+    try {
+      const bill = await apiFn(`/api/staff/bills/by-booking?bookingId=${encodeURIComponent(currentBookingId)}`);
+      currentBill = bill;
+      if (billMeta) billMeta.textContent = `Bill #${safe(bill.id)} · Receptionist: ${safe(bill.receptionistUsername, "")}`;
+      if (btnDeleteBill) btnDeleteBill.classList.remove("d-none");
+      if (billPaymentDate && bill.paymentDate) billPaymentDate.value = bill.paymentDate;
+      if (billPaymentType && bill.paymentType !== null && bill.paymentType !== undefined) billPaymentType.value = String(bill.paymentType);
+      if (billNote) billNote.value = bill.note ?? "";
+      if (billAmount) billAmount.value = bill.paymentAmount ?? billAmount.value ?? 0;
+    } catch {
+      if (billMeta) billMeta.textContent = "Chưa có bill";
+    }
   }
 
   function renderBookingRow(b) {
@@ -29,7 +92,6 @@ async function initBookingsPage(apiFn) {
           <div class="fw-semibold">${safe(b.clientName)}</div>
           <div class="small text-muted">${safe(b.clientEmail)}</div>
         </td>
-        <td>${safe(b.employeeUsername)}</td>
         <td class="text-end">${safe(b.roomsCount, "0")}</td>
         <td class="text-end">
           <button class="btn btn-sm btn-outline-primary" data-view-booking="${b.id}">View</button>
@@ -84,10 +146,11 @@ async function initBookingsPage(apiFn) {
       titleEl.textContent = `Booking #${bk.id}`;
       bkClient.textContent = safe(bk.clientName);
       bkClientMeta.textContent = `${safe(bk.clientEmail)} · ${safe(bk.clientPhone, "")}`;
-      bkEmployee.textContent = safe(bk.employeeUsername);
+      bkEmployee.textContent = `Rooms: ${safe(bk.roomsCount, "0")}`;
       bkDate.textContent = `Booking date: ${safe(bk.bookingDate)}`;
       bkNote.textContent = safe(bk.note, "");
       brTbody.innerHTML = (bk.bookedRooms || []).map(renderBookedRoomRow).join("");
+      await loadBillForBooking(bk.id);
       modal?.show();
     } catch (err) {
       modalAlert.textContent = err.message;
@@ -109,11 +172,49 @@ async function initBookingsPage(apiFn) {
       if (bkId) {
         const bk = await apiFn(`/api/staff/bookings/${bkId}`);
         brTbody.innerHTML = (bk.bookedRooms || []).map(renderBookedRoomRow).join("");
+        await refreshBillCalc();
       }
       await load();
     } catch (err) {
       modalAlert.textContent = err.message;
       modalAlert.classList.remove("d-none");
+    }
+  });
+
+  btnSaveBill?.addEventListener("click", async () => {
+    if (!currentBookingId) return;
+    setBillAlert(null);
+    try {
+      const payload = {
+        bookingId: currentBookingId,
+        paymentDate: billPaymentDate?.value || todayStr(),
+        paymentAmount: 0,
+        paymentType: billPaymentType?.value !== "" ? Number(billPaymentType.value) : 0,
+        note: billNote?.value || null,
+      };
+
+      if (currentBill?.id) {
+        await apiFn(`/api/staff/bills/${currentBill.id}`, { method: "PUT", body: JSON.stringify(payload) });
+      } else {
+        await apiFn(`/api/staff/bills`, { method: "POST", body: JSON.stringify(payload) });
+      }
+      await loadBillForBooking(currentBookingId);
+      await load();
+    } catch (e) {
+      setBillAlert(e.message);
+    }
+  });
+
+  btnDeleteBill?.addEventListener("click", async () => {
+    if (!currentBill?.id) return;
+    if (!confirm("Delete this bill?")) return;
+    setBillAlert(null);
+    try {
+      await apiFn(`/api/staff/bills/${currentBill.id}`, { method: "DELETE" });
+      await loadBillForBooking(currentBookingId);
+      await load();
+    } catch (e) {
+      setBillAlert(e.message);
     }
   });
 

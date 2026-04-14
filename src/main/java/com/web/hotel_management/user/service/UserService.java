@@ -5,6 +5,9 @@ import com.web.hotel_management.user.dto.SelfUpdateRequest;
 import com.web.hotel_management.user.dto.UserCreateRequest;
 import com.web.hotel_management.user.entity.User;
 import com.web.hotel_management.user.repository.UserRepository;
+import com.web.hotel_management.auth.repository.RefreshTokenRepository;
+import com.web.hotel_management.booking.repository.BookingRepository;
+import com.web.hotel_management.billing.repository.BillRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,10 +24,22 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final BookingRepository bookingRepository;
+    private final BillRepository billRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            RefreshTokenRepository refreshTokenRepository,
+            BookingRepository bookingRepository,
+            BillRepository billRepository
+    ) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.refreshTokenRepository = refreshTokenRepository;
+        this.bookingRepository = bookingRepository;
+        this.billRepository = billRepository;
     }
 
     public Optional<User> findByUsername(String username) {
@@ -132,6 +147,13 @@ public class UserService {
         if ("ADMIN".equals(role)) {
             throw new RuntimeException("Cannot delete ADMIN user");
         }
+        if (!billRepository.findByReceptionist_Id(id).isEmpty()) {
+            throw new RuntimeException("Cannot delete user because it is referenced by bills");
+        }
+
+        // Remove refresh tokens first to avoid FK constraint failures
+        refreshTokenRepository.deleteByUserId(id);
+
         userRepository.deleteById(id);
         log.info("User deleted with id: {}", id);
     }

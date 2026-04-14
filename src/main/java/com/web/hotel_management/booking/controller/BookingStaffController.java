@@ -27,12 +27,10 @@ public class BookingStaffController {
 
     @GetMapping
     public List<BookingStaffResponse> list(
-            @RequestParam(required = false) Integer clientId,
-            @RequestParam(required = false) Integer employeeId
+            @RequestParam(required = false) Integer clientId
     ) {
         List<Booking> bookings;
         if (clientId != null) bookings = bookingRepository.findByClient_Id(clientId);
-        else if (employeeId != null) bookings = bookingRepository.findByEmployee_Id(employeeId);
         else bookings = bookingRepository.findAll();
 
         return bookings.stream().map(b -> {

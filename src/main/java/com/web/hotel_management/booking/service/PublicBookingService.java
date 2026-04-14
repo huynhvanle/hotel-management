@@ -10,8 +10,6 @@ import com.web.hotel_management.client.entity.Client;
 import com.web.hotel_management.client.repository.ClientRepository;
 import com.web.hotel_management.room.entity.Room;
 import com.web.hotel_management.room.repository.RoomRepository;
-import com.web.hotel_management.user.entity.User;
-import com.web.hotel_management.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,20 +25,17 @@ public class PublicBookingService {
     private final BookedRoomRepository bookedRoomRepository;
     private final ClientRepository clientRepository;
     private final RoomRepository roomRepository;
-    private final UserRepository userRepository;
 
     public PublicBookingService(
             BookingRepository bookingRepository,
             BookedRoomRepository bookedRoomRepository,
             ClientRepository clientRepository,
-            RoomRepository roomRepository,
-            UserRepository userRepository
+            RoomRepository roomRepository
     ) {
         this.bookingRepository = bookingRepository;
         this.bookedRoomRepository = bookedRoomRepository;
         this.clientRepository = clientRepository;
         this.roomRepository = roomRepository;
-        this.userRepository = userRepository;
     }
 
     public BookingResponse createPublicBooking(CreateBookingRequest req) {
@@ -70,7 +65,6 @@ public class PublicBookingService {
                 .discount(0.0)
                 .note(req.getNote())
                 .client(client)
-                .employee(resolveEmployee())
                 .build();
         Booking savedBooking = bookingRepository.save(booking);
 
@@ -93,12 +87,6 @@ public class PublicBookingService {
                 .bookingId(savedBooking.getId())
                 .bookedRoomId(firstBookedRoomId)
                 .build();
-    }
-
-    private User resolveEmployee() {
-        return userRepository.findTop1ByOrderByIdAsc().stream()
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("No staff user found for booking"));
     }
 
     private static List<String> resolveRoomIds(CreateBookingRequest req) {

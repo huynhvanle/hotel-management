@@ -2,6 +2,7 @@ package com.web.hotel_management.room.controller;
 
 import com.web.hotel_management.hotel.entity.Hotel;
 import com.web.hotel_management.hotel.repository.HotelRepository;
+import com.web.hotel_management.booking.repository.BookedRoomRepository;
 import com.web.hotel_management.room.dto.RoomStaffRequest;
 import com.web.hotel_management.room.dto.RoomStaffResponse;
 import com.web.hotel_management.room.entity.Room;
@@ -25,10 +26,12 @@ public class RoomStaffController {
 
     private final RoomRepository roomRepository;
     private final HotelRepository hotelRepository;
+    private final BookedRoomRepository bookedRoomRepository;
 
-    public RoomStaffController(RoomRepository roomRepository, HotelRepository hotelRepository) {
+    public RoomStaffController(RoomRepository roomRepository, HotelRepository hotelRepository, BookedRoomRepository bookedRoomRepository) {
         this.roomRepository = roomRepository;
         this.hotelRepository = hotelRepository;
+        this.bookedRoomRepository = bookedRoomRepository;
     }
 
     @GetMapping
@@ -96,6 +99,9 @@ public class RoomStaffController {
     public void delete(@PathVariable String id) {
         if (!roomRepository.existsById(id)) {
             throw new RuntimeException("Room not found with id: " + id);
+        }
+        if (!bookedRoomRepository.findByRoom_Id(id).isEmpty()) {
+            throw new RuntimeException("Cannot delete room because it has booked rooms");
         }
         roomRepository.deleteById(id);
     }

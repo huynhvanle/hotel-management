@@ -62,7 +62,7 @@ async function initRoomsPage(apiFn) {
     hotels.forEach((h) => {
       const opt = document.createElement("option");
       opt.value = h.id;
-      opt.textContent = `${h.name} (ID=${h.id})`;
+      opt.textContent = `${h.name}`;
       sel.appendChild(opt);
     });
     if (selectedId != null) sel.value = String(selectedId);
@@ -75,7 +75,7 @@ async function initRoomsPage(apiFn) {
         <td>${r.name ?? ""}</td>
         <td>${r.type ?? ""}</td>
         <td class="text-end">${money(r.price)}</td>
-        <td>${r.hotelName ?? ""} (ID=${r.hotelId ?? ""})</td>
+        <td>${r.hotelName ?? ""}</td>
         <td class="text-end">
           <button class="btn btn-sm btn-outline-primary" data-edit-room="${r.id}">Edit</button>
           <button class="btn btn-sm btn-outline-danger ms-1" data-delete-room="${r.id}">Delete</button>
@@ -156,11 +156,18 @@ async function initRoomsPage(apiFn) {
   btnSave?.addEventListener("click", async () => {
     formAlert.classList.add("d-none");
     const fd = new FormData(form);
+    const priceRaw = fd.get("price");
+    const priceNum = priceRaw !== "" ? Number(priceRaw) : null;
+    if (priceNum === null || Number.isNaN(priceNum)) {
+      formAlert.textContent = "Price phải là số.";
+      formAlert.classList.remove("d-none");
+      return;
+    }
     const payload = {
       id: fd.get("id"),
       name: fd.get("name"),
       type: fd.get("type"),
-      price: fd.get("price") !== "" ? Number(fd.get("price")) : null,
+      price: priceNum,
       hotelId: fd.get("hotelId") !== "" ? Number(fd.get("hotelId")) : null,
       description: fd.get("description") || null,
     };

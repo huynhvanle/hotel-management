@@ -25,9 +25,6 @@ public class BookingStaffResponse {
     private String clientEmail;
     private String clientPhone;
 
-    private Integer employeeId;
-    private String employeeUsername;
-
     private Integer roomsCount;
     private List<BookedRoomStaffResponse> bookedRooms;
 
@@ -42,8 +39,6 @@ public class BookingStaffResponse {
                 .clientName(b.getClient() != null ? b.getClient().getFullName() : null)
                 .clientEmail(b.getClient() != null ? b.getClient().getEmail() : null)
                 .clientPhone(b.getClient() != null ? b.getClient().getPhone() : null)
-                .employeeId(b.getEmployee() != null ? b.getEmployee().getId() : null)
-                .employeeUsername(b.getEmployee() != null ? b.getEmployee().getUsername() : null)
                 .build();
     }
 }

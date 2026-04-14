@@ -2,7 +2,6 @@ package com.web.hotel_management.booking.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.web.hotel_management.client.entity.Client;
-import com.web.hotel_management.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -33,11 +32,6 @@ public class Booking {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "clientID")
     private Client client;
-
-    /** Nhân viên xử lý đặt phòng — {@code employee} trong biểu đồ. */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userID")
-    private User employee;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

@@ -21,7 +21,6 @@
             <li class="nav-item"><a class="nav-link active" href="./hotels.html">Hotels</a></li>
             <li class="nav-item"><a class="nav-link" href="./rooms.html">Rooms</a></li>
             <li class="nav-item"><a class="nav-link" href="./bookings.html">Bookings</a></li>
-            <li class="nav-item"><a class="nav-link" href="./bills.html">Bills</a></li>
             <li class="nav-item ms-lg-2"><button class="btn btn-outline-light btn-sm" id="btnLogout">Logout</button></li>
           </ul>
         </div>
@@ -29,17 +28,77 @@
     </nav>
 
     <main class="container py-4">
-      <h1 class="h3 fw-semibold mb-2">Hotels</h1>
-      <div class="text-muted mb-3">
-        Placeholder UI. Mình sẽ nối API admin CRUD theo đúng ERD.
+      <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
+        <div>
+          <h1 class="h3 fw-semibold mb-1">Hotels</h1>
+          <div class="text-muted">Thêm, sửa, xoá khách sạn (ADMIN).</div>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary" id="btnAddHotel">Add hotel</button>
+          <button class="btn btn-primary" id="btnReloadHotels">Reload</button>
+        </div>
       </div>
-      <div class="alert alert-info mb-0">
-        Hiện bạn có thể xem hotel/rooms ở client; phần quản trị sẽ làm tiếp.
+
+      <div id="hotelsAlert" class="alert alert-danger d-none"></div>
+
+      <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+          <table class="table mb-0">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Stars</th>
+                <th>Address</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="hotelsTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal fade" id="hotelModal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="hotelModalTitle">Hotel</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+              <div id="hotelFormAlert" class="alert alert-danger d-none"></div>
+              <form id="hotelForm" class="row g-3">
+                <input type="hidden" name="id" />
+                <div class="col-12">
+                  <label class="form-label">Name</label>
+                  <input class="form-control" name="name" required />
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Star level (1-5)</label>
+                  <input class="form-control" type="number" min="1" max="5" name="starLevel" />
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Address</label>
+                  <input class="form-control" name="address" />
+                </div>
+                <div class="col-12">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-control" name="description" rows="2"></textarea>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button class="btn btn-primary" id="btnSaveHotel">Save</button>
+            </div>
+          </div>
+        </div>
       </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./admin.js"></script>
+    <script src="./hotels.js"></script>
   </body>
 </html>
 
