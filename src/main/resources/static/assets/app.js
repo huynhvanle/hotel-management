@@ -31,6 +31,12 @@ function daysBetweenInclusiveStart(checkin, checkout) {
   return Math.ceil(ms / (1000 * 60 * 60 * 24));
 }
 
+/** Số đêm lưu trú: checkin → checkout (checkout exclusive), cùng quy ước booking */
+function stayNightsFromDates(checkin, checkout) {
+  if (!checkin || !checkout || checkout <= checkin) return 0;
+  return daysBetweenInclusiveStart(checkin, checkout);
+}
+
 async function apiGet(path) {
   const res = await fetch(`${CTX}${path}`);
   if (!res.ok) {
@@ -206,6 +212,35 @@ async function initRoomDetail() {
   const form = qs("#bookingForm");
   const result = qs("#bookingResult");
   const hiddenRoomIds = form ? form.elements.namedItem("roomIds") : null;
+  /** Khối ước tính (trình duyệt có thể cache room.html cũ không có #bookingEstimateLine) */
+  let estimateLine = qs("#bookingEstimateLine");
+  if (!estimateLine && form) {
+    const checkoutCol = form.querySelector('input[name="checkout"]')?.closest(".col-6");
+    if (checkoutCol) {
+      const row = document.createElement("div");
+      row.className = "col-12";
+      row.innerHTML = `
+        <div class="rounded-3 border border-primary border-2 p-3 bg-light small shadow-sm" id="bookingEstimateWrap">
+          <div class="text-primary fw-semibold mb-1">Ước tính thanh toán</div>
+          <div class="fw-semibold" id="bookingEstimateLine">Chọn ngày nhận / trả để xem tạm tính.</div>
+        </div>`;
+      checkoutCol.insertAdjacentElement("afterend", row);
+      estimateLine = qs("#bookingEstimateLine");
+    }
+  }
+
+  function wireDateEstimate(updateFn) {
+    if (!form || !estimateLine) return;
+    const ci = form.elements.namedItem("checkin");
+    const co = form.elements.namedItem("checkout");
+    if (!ci || !co) return;
+    const run = () => updateFn();
+    ci.addEventListener("change", run);
+    co.addEventListener("change", run);
+    ci.addEventListener("input", run);
+    co.addEventListener("input", run);
+    run();
+  }
 
   function showResultOk(msg) {
     result.textContent = msg;
@@ -247,6 +282,12 @@ async function initRoomDetail() {
       }
       if (checkout <= checkin) {
         showResultErr("Ngày trả phòng phải sau ngày nhận phòng.");
+        if (submitBtn) submitBtn.disabled = false;
+        return;
+      }
+      const nights = daysBetweenInclusiveStart(checkin, checkout);
+      if (nights > 7) {
+        showResultErr("Chỉ cho phép đặt tối đa 7 đêm.");
         if (submitBtn) submitBtn.disabled = false;
         return;
       }
@@ -293,6 +334,33 @@ async function initRoomDetail() {
 
     const selectedRooms = new Map(); // id -> room
 
+    function updateEstimateMulti() {
+      if (!estimateLine) return;
+      const ci = form.elements.namedItem("checkin")?.value;
+      const co = form.elements.namedItem("checkout")?.value;
+      const n = stayNightsFromDates(ci, co);
+      if (selectedRooms.size === 0) {
+        estimateLine.textContent = "Chọn phòng ở bước trước.";
+        return;
+      }
+      if (!ci || !co) {
+        estimateLine.textContent = "Chọn ngày nhận / trả để xem tạm tính.";
+        return;
+      }
+      if (n <= 0) {
+        estimateLine.textContent = "Ngày trả phải sau ngày nhận.";
+        return;
+      }
+      if (n > 7) {
+        estimateLine.textContent = "Chỉ cho phép tối đa 7 đêm.";
+        return;
+      }
+      let sumPerNight = 0;
+      for (const r of selectedRooms.values()) sumPerNight += Number(r.price || 0);
+      const total = sumPerNight * n;
+      estimateLine.textContent = `${n} đêm · ${selectedRooms.size} phòng · ${fmtMoney(sumPerNight)}/đêm tổng = ${fmtMoney(total)}`;
+    }
+
     function renderSummary() {
       const count = selectedRooms.size;
       selectedCount.textContent = `${count}`;
@@ -300,6 +368,7 @@ async function initRoomDetail() {
       for (const r of selectedRooms.values()) total += Number(r.price || 0);
       selectedTotal.textContent = fmtMoney(total);
       btnNext.disabled = selectedRooms.size === 0;
+      updateEstimateMulti();
     }
 
     function renderPickCard(r) {
@@ -384,6 +453,7 @@ async function initRoomDetail() {
         : `Danh sách phòng: ${ids.join(", ")}`;
       priceEl.textContent = selectedTotal.textContent;
       descEl.textContent = ids.length === 1 ? (first.description || "—") : "Bạn sẽ đặt cùng lúc các phòng đã chọn ở bước trước.";
+      updateEstimateMulti();
     });
 
     btnBack.addEventListener("click", async () => {
@@ -395,6 +465,7 @@ async function initRoomDetail() {
 
     // IMPORTANT: wire submit for multi-room flow too
     wireBookingSubmit(() => getRoomIdsFromHiddenOrFallback(null));
+    wireDateEstimate(updateEstimateMulti);
 
     await loadRoomsForPick();
     return;
@@ -418,6 +489,27 @@ async function initRoomDetail() {
   }
 
   wireBookingSubmit(() => getRoomIdsFromHiddenOrFallback(room.id));
+  wireDateEstimate(() => {
+    if (!estimateLine) return;
+    const ci = form.elements.namedItem("checkin")?.value;
+    const co = form.elements.namedItem("checkout")?.value;
+    const n = stayNightsFromDates(ci, co);
+    if (!ci || !co) {
+      estimateLine.textContent = "Chọn ngày nhận / trả để xem tạm tính.";
+      return;
+    }
+    if (n <= 0) {
+      estimateLine.textContent = "Ngày trả phải sau ngày nhận.";
+      return;
+    }
+    if (n > 7) {
+      estimateLine.textContent = "Chỉ cho phép tối đa 7 đêm.";
+      return;
+    }
+    const per = Number(room.price || 0);
+    const total = per * n;
+    estimateLine.textContent = `${n} đêm × ${fmtMoney(per)} = ${fmtMoney(total)}`;
+  });
 }
 
 async function initRoomTypeDetail() {

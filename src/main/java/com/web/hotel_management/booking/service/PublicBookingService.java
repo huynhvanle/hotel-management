@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ import java.util.Set;
 @Service
 @Transactional
 public class PublicBookingService {
+    private static final long MAX_NIGHTS = 7;
     private final BookingRepository bookingRepository;
     private final BookedRoomRepository bookedRoomRepository;
     private final ClientRepository clientRepository;
@@ -41,6 +43,10 @@ public class PublicBookingService {
     public BookingResponse createPublicBooking(CreateBookingRequest req) {
         if (req.getCheckout().isBefore(req.getCheckin()) || req.getCheckout().isEqual(req.getCheckin())) {
             throw new RuntimeException("Checkout must be after checkin");
+        }
+        long nights = ChronoUnit.DAYS.between(req.getCheckin(), req.getCheckout());
+        if (nights > MAX_NIGHTS) {
+            throw new RuntimeException("Chỉ cho phép đặt tối đa 7 đêm.");
         }
 
         List<String> roomIds = resolveRoomIds(req);
