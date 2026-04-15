@@ -130,6 +130,28 @@ function hideHotelsLinksForUser(role) {
   });
 }
 
+function hideRevenueNavForUser(role) {
+  if (role !== "USER") return;
+  qsa('a[href="./revenue.html"], a[href="revenue.html"]').forEach((el) => {
+    const li = el.closest("li");
+    if (li) li.remove();
+    else el.remove();
+  });
+}
+
+function isRevenuePage() {
+  return window.location.pathname.endsWith("/admin/revenue.html");
+}
+
+async function enforceRevenueAdminOnly(role) {
+  if (!isRevenuePage()) return true;
+  if (role !== "ADMIN") {
+    window.location.href = "./index.html";
+    return false;
+  }
+  return true;
+}
+
 async function enforceAdminPageAuthAndRole() {
   if (isLoginPage()) return null;
   // Only run in /admin/* pages
@@ -140,10 +162,13 @@ async function enforceAdminPageAuthAndRole() {
     const role = normalizeRole(me.position);
     hideUsersLinksForUser(role);
     hideHotelsLinksForUser(role);
+    hideRevenueNavForUser(role);
     const ok = await enforceUsersAdminOnly(role);
     if (!ok) return null;
     const okHotels = await enforceHotelsAdminOnly(role);
     if (!okHotels) return null;
+    const okRev = await enforceRevenueAdminOnly(role);
+    if (!okRev) return null;
     return { me, role };
   } catch {
     return null;

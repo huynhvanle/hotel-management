@@ -30,4 +30,16 @@ public interface BookedRoomRepository extends JpaRepository<BookedRoom, Integer>
             @Param("checkin") LocalDate checkin,
             @Param("checkout") LocalDate checkout
     );
+
+    @Query("""
+            select br from BookedRoom br
+            join fetch br.booking b
+            join fetch br.room r
+            where b.bookingDate >= :from and b.bookingDate <= :to
+            order by b.id, br.id
+            """)
+    List<BookedRoom> findForRevenueByBookingDateBetween(
+            @Param("from") LocalDate from,
+            @Param("to") LocalDate to
+    );
 }
