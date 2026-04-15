@@ -87,7 +87,7 @@ async function initIndex() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const q = toQuery(form);
-    window.location.href = `./rooms.html${q}`;
+    window.location.href = `./room-list.html${q}`;
   });
 }
 
@@ -150,6 +150,12 @@ async function initRooms() {
     const v = u.searchParams.get(key);
     if (el && v) el.value = v;
   }
+  const typeEl = form.elements.namedItem("type");
+  if (typeEl && typeEl.tagName === "SELECT" && u.searchParams.get("type")) {
+    const raw = u.searchParams.get("type").trim();
+    const canon = ["Standard", "Deluxe", "Suite"].find((t) => t.toLowerCase() === raw.toLowerCase());
+    typeEl.value = canon || "";
+  }
 
   async function load() {
     alertBox.classList.add("d-none");
@@ -172,7 +178,7 @@ async function initRooms() {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const q = toQuery(form);
-    window.location.href = `./rooms.html${q}`;
+    window.location.href = `./room-list.html${q}`;
   });
 
   await load();
@@ -269,7 +275,7 @@ async function initRoomDetail() {
 
       try {
         const created = await apiPost("/api/bookings", payload);
-        showResultOk(`Đặt phòng thành công. Mã booking: ${created.bookingId}`);
+        showResultOk("Đặt hàng thành công");
         form.reset();
       } catch (err) {
         showResultErr(`Đặt phòng thất bại: ${err.message}`);
@@ -455,7 +461,7 @@ async function initRoomTypeDetail() {
   title.textContent = `Hạng phòng: ${type}`;
   subtitle.textContent = p.subtitle;
   fit.textContent = p.fit;
-  listLink.href = `./rooms.html?type=${encodeURIComponent(type)}`;
+  listLink.href = `./room-list.html?type=${encodeURIComponent(type)}`;
 
   try {
     const rooms = await apiGet(`/api/rooms?type=${encodeURIComponent(type)}`);

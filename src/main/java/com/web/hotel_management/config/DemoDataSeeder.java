@@ -54,7 +54,7 @@ public class DemoDataSeeder {
                     .name("Hanoi Hotel")
                     .starLevel(4)
                     .address("Hà Nội, Việt Nam")
-                    .description("Demo hotel for student project")
+                    .description("")
                     .build());
 
             List<Room> rooms = List.of(

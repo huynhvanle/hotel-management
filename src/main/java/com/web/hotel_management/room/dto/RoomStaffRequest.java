@@ -2,6 +2,7 @@ package com.web.hotel_management.room.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class RoomStaffRequest {
     private String name;
 
     @NotBlank(message = "Room type is required")
+    @Pattern(regexp = "^(?i)(Standard|Deluxe|Suite)$", message = "Room type must be Standard, Deluxe, or Suite")
     private String type;
 
     @NotNull(message = "Price is required")

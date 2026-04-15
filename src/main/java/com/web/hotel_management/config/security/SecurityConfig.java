@@ -54,7 +54,7 @@ public class SecurityConfig {
                         "/index.html",
                         "/room-types.html",
                         "/room-type-detail.html",
-                        "/rooms.html",
+                        "/room-list.html",
                         "/room.html",
                         "/admin",
                         "/admin/**",

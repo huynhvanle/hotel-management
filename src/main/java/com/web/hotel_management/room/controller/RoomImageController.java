@@ -20,13 +20,15 @@ public class RoomImageController {
     @GetMapping("/{id}/image")
     public ResponseEntity<Resource> image(@PathVariable String id) {
         Path dir = Path.of("uploads", "rooms").toAbsolutePath().normalize();
-        List<String> exts = List.of(".jpg", ".jpeg", ".png", ".webp");
+        List<String> exts = List.of(".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg");
         for (String ext : exts) {
             Path p = dir.resolve(id + ext);
             if (Files.exists(p)) {
                 MediaType mt = switch (ext) {
                     case ".png" -> MediaType.IMAGE_PNG;
                     case ".webp" -> MediaType.parseMediaType("image/webp");
+                    case ".gif" -> MediaType.IMAGE_GIF;
+                    case ".svg" -> MediaType.parseMediaType("image/svg+xml");
                     default -> MediaType.IMAGE_JPEG;
                 };
                 return ResponseEntity.ok()

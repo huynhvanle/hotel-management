@@ -70,7 +70,7 @@ public class RoomStaffController {
         Room room = Room.builder()
                 .id(id)
                 .name(req.getName().trim())
-                .type(req.getType().trim())
+                .type(normalizeRoomType(req.getType()))
                 .price(req.getPrice())
                 .description(req.getDescription())
                 .hotel(hotel)
@@ -87,7 +87,7 @@ public class RoomStaffController {
                 .orElseThrow(() -> new RuntimeException("Hotel not found with id: " + req.getHotelId()));
 
         room.setName(req.getName().trim());
-        room.setType(req.getType().trim());
+        room.setType(normalizeRoomType(req.getType()));
         room.setPrice(req.getPrice());
         room.setDescription(req.getDescription());
         room.setHotel(hotel);
@@ -117,7 +117,7 @@ public class RoomStaffController {
         String ct = file.getContentType();
         String ext = contentTypeToExt(ct);
         if (ext == null) {
-            throw new RuntimeException("Only JPG/PNG/WEBP images are allowed");
+            throw new RuntimeException("Only JPG/PNG/WEBP/GIF/SVG images are allowed");
         }
 
         try {
@@ -129,6 +129,8 @@ public class RoomStaffController {
             deleteIfExists(dir.resolve(id + ".jpeg"));
             deleteIfExists(dir.resolve(id + ".png"));
             deleteIfExists(dir.resolve(id + ".webp"));
+            deleteIfExists(dir.resolve(id + ".gif"));
+            deleteIfExists(dir.resolve(id + ".svg"));
 
             Path out = dir.resolve(id + ext);
             try (InputStream in = file.getInputStream()) {
@@ -151,6 +153,8 @@ public class RoomStaffController {
             case "image/jpeg", "image/jpg" -> ".jpg";
             case "image/png" -> ".png";
             case "image/webp" -> ".webp";
+            case "image/gif" -> ".gif";
+            case "image/svg+xml" -> ".svg";
             default -> null;
         };
     }
@@ -159,6 +163,18 @@ public class RoomStaffController {
         if (s == null) return null;
         String t = s.trim();
         return t.isEmpty() ? null : t;
+    }
+
+    /** Canonical type after validation: Standard | Deluxe | Suite */
+    private static String normalizeRoomType(String raw) {
+        if (raw == null) return null;
+        String t = raw.trim();
+        for (String opt : List.of("Standard", "Deluxe", "Suite")) {
+            if (opt.equalsIgnoreCase(t)) {
+                return opt;
+            }
+        }
+        return t;
     }
 }
 

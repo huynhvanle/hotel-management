@@ -20,8 +20,13 @@ async function initRoomsPage(apiFn) {
   let editId = null;
   let currentRoomIdForImage = null;
 
-  const IMG_BASE = "/hotel-management/uploads/rooms/";
-  const IMG_EXTS = [".jpg", ".jpeg", ".png", ".webp"];
+  const ROOM_TYPES = ["Standard", "Deluxe", "Suite"];
+  function normalizeRoomType(t) {
+    if (t == null || String(t).trim() === "") return "Standard";
+    const s = String(t).trim();
+    const found = ROOM_TYPES.find((x) => x.toLowerCase() === s.toLowerCase());
+    return found || "Standard";
+  }
 
   async function setPreviewByRoomId(roomId) {
     currentRoomIdForImage = roomId;
@@ -32,18 +37,11 @@ async function initRoomsPage(apiFn) {
       return;
     }
     imgPreview.style.display = "block";
-    // try a few extensions (server stores one of them)
-    const ts = Date.now();
-    for (const ext of IMG_EXTS) {
-      const url = `${IMG_BASE}${encodeURIComponent(roomId)}${ext}?t=${ts}`;
-      const ok = await fetch(url, { method: "HEAD" }).then((r) => r.ok).catch(() => false);
-      if (ok) {
-        imgPreview.src = url;
-        return;
-      }
-    }
-    imgPreview.src = "";
-    imgPreview.style.display = "none";
+    imgPreview.onerror = () => {
+      imgPreview.src = "";
+      imgPreview.style.display = "none";
+    };
+    imgPreview.src = `/hotel-management/api/rooms/${encodeURIComponent(roomId)}/image?t=${Date.now()}`;
   }
 
   function money(v) {
@@ -104,6 +102,8 @@ async function initRoomsPage(apiFn) {
     modalTitle.textContent = "Create room";
     formAlert.classList.add("d-none");
     form.reset();
+    const typeSel = form.elements.namedItem("type");
+    if (typeSel && typeSel.tagName === "SELECT") typeSel.value = "Standard";
     form.elements.namedItem("id").disabled = false;
     if (imgFile) imgFile.value = "";
     await setPreviewByRoomId(null);
@@ -125,7 +125,7 @@ async function initRoomsPage(apiFn) {
         form.elements.namedItem("id").value = r.id || "";
         form.elements.namedItem("id").disabled = true;
         form.elements.namedItem("name").value = r.name || "";
-        form.elements.namedItem("type").value = r.type || "";
+        form.elements.namedItem("type").value = normalizeRoomType(r.type);
         form.elements.namedItem("price").value = r.price ?? "";
         form.elements.namedItem("description").value = r.description || "";
         await loadHotelsIntoSelect(r.hotelId);
@@ -155,6 +155,7 @@ async function initRoomsPage(apiFn) {
 
   btnSave?.addEventListener("click", async () => {
     formAlert.classList.add("d-none");
+    formAlert.classList.remove("alert-success", "alert-danger");
     const fd = new FormData(form);
     const priceRaw = fd.get("price");
     const priceNum = priceRaw !== "" ? Number(priceRaw) : null;
@@ -173,16 +174,35 @@ async function initRoomsPage(apiFn) {
     };
 
     try {
+      const roomId = mode === "create" ? String(payload.id || "").trim() : editId;
       if (mode === "create") {
         await apiFn("/api/staff/rooms", { method: "POST", body: JSON.stringify(payload) });
       } else {
         await apiFn(`/api/staff/rooms/${editId}`, { method: "PUT", body: JSON.stringify(payload) });
       }
+
+      // If user selected an image, upload it as part of Save.
+      if (roomId && imgFile?.files?.length) {
+        const imgFd = new FormData();
+        imgFd.append("file", imgFile.files[0]);
+        const res = await fetch(`/hotel-management/api/staff/rooms/${encodeURIComponent(roomId)}/image`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${localStorage.getItem("hm_admin_token")}` },
+          body: imgFd,
+        });
+        if (!res.ok) {
+          const txt = await res.text();
+          throw new Error(txt || `HTTP ${res.status}`);
+        }
+      }
+
       modal?.hide();
       await load();
     } catch (err) {
       formAlert.textContent = err.message;
       formAlert.classList.remove("d-none");
+      formAlert.classList.remove("alert-success");
+      formAlert.classList.add("alert-danger");
     }
   });
 
@@ -213,9 +233,15 @@ async function initRoomsPage(apiFn) {
         throw new Error(txt || `HTTP ${res.status}`);
       }
       await setPreviewByRoomId(roomId);
+      formAlert.textContent = "Upload ảnh thành công.";
+      formAlert.classList.remove("d-none");
+      formAlert.classList.remove("alert-danger");
+      formAlert.classList.add("alert-success");
     } catch (e) {
       formAlert.textContent = e.message;
       formAlert.classList.remove("d-none");
+      formAlert.classList.remove("alert-success");
+      formAlert.classList.add("alert-danger");
     }
   });
 
