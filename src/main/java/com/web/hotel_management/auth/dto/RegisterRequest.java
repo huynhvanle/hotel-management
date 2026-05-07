@@ -31,12 +31,12 @@ public class RegisterRequest {
     private String email;
 
     /**
-     * Role (khớp cột {@code position}).
-     * Chỉ cho phép: USER hoặc ADMIN. Nếu bỏ trống thì mặc định USER.
+     * Staff role.
+     * If omitted, defaults to RECEPTIONIST (see service).
      */
-    @Pattern(regexp = "^(?i)(USER|ADMIN)?$",
-            message = "Position must be USER or ADMIN")
-    private String position;
+    @Pattern(regexp = "^(?i)(ADMIN|BRANCH_MANAGER|RECEPTIONIST|SYSTEM)?$",
+            message = "Role must be ADMIN, BRANCH_MANAGER, RECEPTIONIST, or SYSTEM")
+    private String role;
 
     private String description;
 }

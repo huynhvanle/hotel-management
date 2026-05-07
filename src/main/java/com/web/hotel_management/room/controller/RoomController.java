@@ -20,11 +20,12 @@ public class RoomController {
     @GetMapping
     public List<RoomResponse> listRooms(
             @RequestParam(required = false) Integer hotelId,
+            @RequestParam(required = false) Integer roomTypeId,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice
     ) {
-        return roomRepository.search(hotelId, normalize(type), minPrice, maxPrice)
+        return roomRepository.search(hotelId, roomTypeId, normalize(type), minPrice, maxPrice)
                 .stream()
                 .map(RoomResponse::fromEntity)
                 .toList();
@@ -35,6 +36,7 @@ public class RoomController {
             @RequestParam LocalDate checkin,
             @RequestParam LocalDate checkout,
             @RequestParam(required = false) Integer hotelId,
+            @RequestParam(required = false) Integer roomTypeId,
             @RequestParam(required = false) String type,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice
@@ -42,7 +44,7 @@ public class RoomController {
         if (checkout.isBefore(checkin) || checkout.isEqual(checkin)) {
             throw new RuntimeException("Checkout must be after checkin");
         }
-        return roomRepository.searchAvailable(hotelId, normalize(type), minPrice, maxPrice, checkin, checkout)
+        return roomRepository.searchAvailable(hotelId, roomTypeId, normalize(type), minPrice, maxPrice, checkin, checkout)
                 .stream()
                 .map(RoomResponse::fromEntity)
                 .toList();

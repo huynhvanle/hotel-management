@@ -24,12 +24,17 @@ public class Hotel {
     @Column(nullable = false)
     private String name;
 
-    private Integer starLevel;
-
     private String address;
 
-    @Column(length = 500)
+    @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(length = 30)
+    private String phone;
+
+    @Column(nullable = false, length = 20)
+    @Builder.Default
+    private String status = "ACTIVE";
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO khớp bảng {@code tblUser}: ID, username, fullName, position, mail, description.
+ * DTO: ID, username, fullName, role, phone, branch.
  * Không trả về password.
  */
 @Data
@@ -19,9 +19,10 @@ public class UserDTO {
     private Integer id;
     private String username;
     private String fullName;
-    private String position;
-    private String mail;
-    private String description;
+    private String role;
+    private Integer branchId;
+    private String branchName;
+    private String phone;
 
     public static UserDTO fromEntity(User user) {
         if (user == null) {
@@ -31,9 +32,10 @@ public class UserDTO {
                 .id(user.getId())
                 .username(user.getUsername())
                 .fullName(user.getFullName())
-                .position(user.getPosition())
-                .mail(user.getMail())
-                .description(user.getDescription())
+                .role(user.getRole() != null ? user.getRole().name() : null)
+                .branchId(user.getBranch() != null ? user.getBranch().getId() : null)
+                .branchName(user.getBranch() != null ? user.getBranch().getName() : null)
+                .phone(user.getPhone())
                 .build();
     }
 }

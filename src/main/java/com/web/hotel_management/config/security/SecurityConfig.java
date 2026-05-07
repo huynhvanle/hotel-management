@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -42,13 +43,22 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Note: with server.servlet.context-path=/hotel-management, matchers should NOT include it.
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/auth/client/**").permitAll()
                 // Self profile endpoints for any authenticated user
                 .requestMatchers("/me/**").authenticated()
                 // Only ADMIN can manage users via REST
                 .requestMatchers("/user/**").hasRole("ADMIN")
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                // Staff APIs for USER + ADMIN
-                .requestMatchers("/api/staff/**").authenticated()
+                // Public endpoints (guest web helpers)
+                .requestMatchers("/api/public/**").permitAll()
+                // Public booking create requires CLIENT login
+                .requestMatchers(HttpMethod.POST, "/api/bookings").hasRole("CLIENT")
+                // Client self profile endpoints
+                .requestMatchers("/api/client/**").hasRole("CLIENT")
+                // Receptionist endpoints
+                .requestMatchers("/api/reception/**").hasRole("RECEPTIONIST")
+                // Branch manager endpoints (also allowed for admin)
+                .requestMatchers("/api/branch/**").hasAnyRole("BRANCH_MANAGER", "ADMIN")
                 .requestMatchers(
                         "/",
                         "/index.html",
@@ -56,13 +66,19 @@ public class SecurityConfig {
                         "/room-type-detail.html",
                         "/room-list.html",
                         "/room.html",
+                        "/client/**",
                         "/admin",
                         "/admin/**",
                         "/staff/**",
+                        "/reception/**",
                         "/uploads/**",
                         "/assets/**"
                 ).permitAll()
-                .requestMatchers("/api/**").permitAll()
+                // Public APIs for guest web
+                .requestMatchers("/api/hotels/**").permitAll()
+                .requestMatchers("/api/rooms/**").permitAll()
+                .requestMatchers("/api/room-types/**").permitAll()
+                .requestMatchers("/api/bookings/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
             )

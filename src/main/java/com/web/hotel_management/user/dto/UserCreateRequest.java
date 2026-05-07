@@ -1,6 +1,5 @@
 package com.web.hotel_management.user.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -28,14 +27,17 @@ public class UserCreateRequest {
     @NotBlank(message = "Full name is required")
     private String fullName;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
-    private String mail;
+    @NotBlank(message = "Phone is required")
+    private String phone;
 
-    @NotBlank(message = "Position is required")
-    @Pattern(regexp = "^(?i)(USER|ADMIN)$", message = "Position must be USER or ADMIN")
-    private String position;
+    @NotBlank(message = "Role is required")
+    @Pattern(regexp = "^(?i)(ADMIN|BRANCH_MANAGER|RECEPTIONIST)$",
+            message = "Role must be ADMIN, BRANCH_MANAGER, or RECEPTIONIST")
+    private String role;
 
-    private String description;
+    /**
+     * Required for BRANCH_MANAGER/RECEPTIONIST; ignored for ADMIN.
+     */
+    private Integer branchId;
 }
 

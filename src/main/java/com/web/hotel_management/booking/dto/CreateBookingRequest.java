@@ -30,23 +30,13 @@ public class CreateBookingRequest {
     private String note;
 
     @Valid
-    @NotNull
     private ClientInput client;
 
     @Data
     public static class ClientInput {
-        @NotNull
         @Positive
         private Long idCardNumber;
 
-        @NotBlank
         private String fullName;
-
-        @NotBlank
-        private String email;
-
-        private String phone;
-        private String address;
-        private String description;
     }
 }

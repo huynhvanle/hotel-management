@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hạng phòng</title>
+    <title>Đặt phòng</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./assets/styles.css?v=20260414_cssfix" />
+    <link rel="stylesheet" href="./assets/styles.css?v=20260507_navbar_btns" />
   </head>
-  <body class="bg-light">
+  <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <a class="navbar-brand fw-semibold" href="./index.html">Hotel</a>
@@ -18,32 +18,44 @@
           <ul class="navbar-nav ms-auto">
             <li class="nav-item"><a class="nav-link" href="./index.html">Trang chủ</a></li>
             <li class="nav-item"><a class="nav-link" href="./room-types.html">Hạng phòng</a></li>
-            <li class="nav-item"><a class="nav-link active" href="./room-list.html">Danh sách phòng</a></li>
-            <li class="nav-item ms-lg-2"><a class="btn btn-primary btn-sm" href="./room.html">Đặt phòng</a></li>
+            <li class="nav-item ms-lg-2">
+              <a class="btn btn-primary btn-sm px-3 d-none" href="./client/profile.html" id="clientOrdersLink">Đơn của tôi</a>
+              <span class="ms-2 dropdown">
+                <button
+                  class="btn btn-outline-light btn-sm rounded-circle d-none"
+                  id="clientUserMenuBtn"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style="width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center;"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M12 12a4.2 4.2 0 1 0 0-8.4A4.2 4.2 0 0 0 12 12Z" stroke="currentColor" stroke-width="2"/>
+                    <path d="M4.5 20.4c1.8-4 13.2-4 15 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" id="clientProfileMenuLink" href="./client/me.html">Xem hồ sơ</a></li>
+                  <li><button class="dropdown-item" id="clientLogoutMenuBtn" type="button">Đăng xuất</button></li>
+                </ul>
+              </span>
+              <a class="btn btn-outline-light btn-sm px-3" href="./client/login.html" id="clientLoginLink">Đăng nhập</a>
+            </li>
           </ul>
         </div>
       </div>
     </nav>
 
     <main class="container py-4">
-      <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between mb-3">
-        <div>
-          <h1 class="h3 mb-1 fw-semibold">Hạng phòng</h1>
-          <div class="text-muted">Chọn phòng phù hợp và tiến hành đặt phòng.</div>
-        </div>
-        <a class="btn btn-outline-secondary" href="./index.html">Quay lại</a>
-      </div>
-
       <div class="card border-0 shadow-sm mb-3">
         <div class="card-body">
           <form id="filterForm" class="row g-3">
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-2">
               <label class="form-label">Khách sạn</label>
               <select class="form-select" name="hotelId" id="hotelSelect">
                 <option value="">Tất cả</option>
               </select>
             </div>
-            <div class="col-12 col-md-3">
+            <div class="col-12 col-md-2">
               <label class="form-label">Loại phòng</label>
               <select class="form-select" name="type">
                 <option value="">Tất cả</option>
@@ -53,6 +65,14 @@
               </select>
             </div>
             <div class="col-6 col-md-2">
+              <label class="form-label">Ngày đến</label>
+              <input class="form-control" type="date" name="checkin" autocomplete="off" required />
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Ngày đi</label>
+              <input class="form-control" type="date" name="checkout" autocomplete="off" required />
+            </div>
+            <div class="col-6 col-md-2">
               <label class="form-label">Giá tối thiểu</label>
               <input class="form-control" type="number" name="minPrice" min="0" />
             </div>
@@ -60,18 +80,89 @@
               <label class="form-label">Giá tối đa</label>
               <input class="form-control" type="number" name="maxPrice" min="0" />
             </div>
-            <div class="col-12 col-md-2 d-grid">
-              <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            <div class="col-12 d-grid d-md-flex justify-content-md-end">
+              <button class="btn btn-primary px-md-5" type="submit">Tìm kiếm</button>
             </div>
           </form>
         </div>
       </div>
 
-      <div id="roomsAlert" class="alert alert-warning d-none"></div>
-      <div id="roomsGrid" class="row g-3"></div>
+      <div id="catalogBookSection" class="row g-4 align-items-start d-none">
+        <div class="col-lg-8">
+          <div id="roomsAlert" class="alert alert-warning d-none"></div>
+          <div id="roomsGrid" class="row g-3"></div>
+        </div>
+        <div class="col-lg-4">
+          <div class="card border-0 shadow-sm sticky-lg-top catalog-book-sidebar">
+            <div class="card-body">
+              <h2 class="h5 fw-semibold mb-2">Thông tin đặt phòng</h2>
+              <div id="catalogHotelLine" class="fw-semibold small mb-2">—</div>
+              <div id="catalogDateLine" class="small mb-3">—</div>
+              <div class="fw-semibold small mb-2">Thông tin phòng</div>
+              <div id="catalogLines" class="catalog-room-lines small mb-3 rounded-3 p-3">
+                <span class="hm-muted">—</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center catalog-sidebar-divider pt-3 mb-3">
+                <span class="fw-semibold">Tổng cộng</span>
+                <span id="catalogTotal" class="h5 mb-0 fw-semibold hm-text-gold">0 ₫</span>
+              </div>
+              <div class="d-grid">
+                <button type="button" class="btn btn-primary fw-semibold py-3" id="catalogBookBtn">
+                  Đặt phòng
+                </button>
+              </div>
+              <div id="catalogBookResult" class="alert d-none mt-3" role="alert"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     </main>
 
+    <!-- (Không dùng) Modal xác nhận đặt phòng -->
+    <div class="modal fade" id="catalogCheckoutModal" tabindex="-1" aria-labelledby="catalogCheckoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="catalogCheckoutModalLabel">Xác nhận đặt phòng</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            <p class="small text-muted mb-3" id="catalogModalSummary"></p>
+            <form id="catalogBookForm" class="row g-3">
+              <div class="col-12">
+                <label class="form-label small mb-0">Họ tên</label>
+                <input class="form-control" name="fullName" required autocomplete="name" />
+              </div>
+              <div class="col-12">
+                <label class="form-label small mb-0">CCCD / Hộ chiếu (số)</label>
+                <input
+                  class="form-control"
+                  type="text"
+                  name="idCardNumber"
+                  required
+                  maxlength="20"
+                  inputmode="numeric"
+                  autocomplete="off"
+                  title="Chỉ nhập chữ số, không có nút tăng/giảm"
+                />
+              </div>
+              <div class="col-12">
+                <label class="form-label small mb-0">Ghi chú</label>
+                <textarea class="form-control" name="note" rows="2"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+            <button type="submit" class="btn btn-primary" id="catalogModalSubmitBtn" form="catalogBookForm">
+              Hoàn tất đặt phòng
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="./assets/app.js?v=20260415_roomlist_select"></script>
+    <script src="./assets/app.js?v=20260506_deposit50"></script>
   </body>
 </html>

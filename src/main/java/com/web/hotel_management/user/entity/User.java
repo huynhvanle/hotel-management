@@ -1,6 +1,7 @@
 package com.web.hotel_management.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.web.hotel_management.hotel.entity.Hotel;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,12 +28,14 @@ public class User {
     @Column(name = "fullName", nullable = false, length = 255)
     private String fullName;
 
-    @Column(nullable = false, length = 255)
-    private String position;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "position", nullable = false, length = 50)
+    private UserRole role;
 
-    @Column(name = "mail", length = 255)
-    private String mail;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotelID")
+    private Hotel branch;
 
-    @Column(length = 255)
-    private String description;
+    @Column(nullable = false, length = 30)
+    private String phone;
 }

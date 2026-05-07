@@ -1,6 +1,5 @@
 package com.web.hotel_management.user.dto;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -20,14 +19,14 @@ public class UserUpdateRequest {
     @NotBlank(message = "Full name is required")
     private String fullName;
     
-    @NotBlank(message = "Position is required")
-    @Pattern(regexp = "^(?i)(USER|ADMIN)$", message = "Position must be USER or ADMIN")
-    private String position;
-    
-    @Email(message = "Email must be valid")
-    private String mail;
-    
-    private String description;
+    @NotBlank(message = "Role is required")
+    @Pattern(regexp = "^(?i)(ADMIN|BRANCH_MANAGER|RECEPTIONIST)$",
+            message = "Role must be ADMIN, BRANCH_MANAGER, or RECEPTIONIST")
+    private String role;
+
+    private Integer branchId;
+
+    private String phone;
     
     private String password;
 }

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Client · Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/styles.css?v=20260507_navbar_btns" />
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand fw-semibold" href="../index.html">Vie Hotel</a>
+        <div class="ms-auto">
+          <a class="btn btn-outline-light btn-sm" href="./login.html">Đăng nhập</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-5" style="max-width: 560px;">
+      <h1 class="h3 fw-semibold mb-2">Đăng ký</h1>
+      <div class="text-muted mb-4">Tạo tài khoản để đặt phòng và theo dõi đơn.</div>
+
+      <div id="registerAlert" class="alert alert-danger d-none"></div>
+
+      <form id="clientRegisterForm" class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">Họ tên</label>
+            <input class="form-control" type="text" name="fullName" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">SĐT (10 chữ số)</label>
+            <input
+              class="form-control"
+              type="text"
+              name="phone"
+              required
+              maxlength="10"
+              pattern="\d{10}"
+              inputmode="numeric"
+              autocomplete="tel"
+              title="Nhập đúng 10 chữ số"
+            />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Mật khẩu (ít nhất 8 ký tự)</label>
+            <input class="form-control" type="password" name="password" minlength="8" maxlength="100" required autocomplete="new-password" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">CCCD / Hộ chiếu (số)</label>
+            <input
+              class="form-control"
+              type="text"
+              name="idCardNumber"
+              maxlength="20"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="Để trống hoặc chỉ nhập chữ số"
+            />
+          </div>
+          <div class="d-grid mt-3">
+            <button class="btn btn-primary" type="submit">Đăng ký</button>
+          </div>
+          <div class="small text-muted mt-3">
+            Đã có tài khoản? <a href="./login.html">Đăng nhập</a>
+          </div>
+        </div>
+      </form>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./client-auth.js?v=20260506_home_after_login"></script>
+  </body>
+</html>
+

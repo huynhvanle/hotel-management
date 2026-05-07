@@ -12,6 +12,7 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+# kết nối database
   datasource:
     url: ${DB_URL:jdbc:mysql://localhost:3306/hotel_management_db}
     username: ${DB_USERNAME:root}
@@ -26,11 +27,17 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: ${HIBERNATE_FORMAT_SQL:true}
 
-  sql:
-    init:
-      mode: never
-
 jwt:
   secret: ${JWT_SECRET:please-change-me-please-change-me-please-change-me}
   access-token-expiration: ${JWT_ACCESS_TOKEN_EXPIRATION:86400000}
   refresh-token-expiration: ${JWT_REFRESH_TOKEN_EXPIRATION:604800000}
+
+payment:
+  # Thông tin thanh toán chuyển khoản/QR tĩnh (hiển thị cho khách + hỗ trợ lễ tân đối chiếu)
+  bank-name: ${PAYMENT_BANK_NAME:Vietcombank}
+  account-number: ${PAYMENT_ACCOUNT_NUMBER:0000000000}
+  account-name: ${PAYMENT_ACCOUNT_NAME:VIE HOTEL}
+  transfer-content-template: ${PAYMENT_TRANSFER_CONTENT_TEMPLATE:DEPOSIT BOOKING {bookingId}}
+  # URL ảnh QR (nên đặt file thật tại uploads/qr.png để public web hiển thị)
+  qr-image-url: ${PAYMENT_QR_IMAGE_URL:/uploads/qr.png}
+  suggested-deposit-percent: ${PAYMENT_SUGGESTED_DEPOSIT_PERCENT:30.0}

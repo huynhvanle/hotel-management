@@ -4,10 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 /**
- * Khách hàng — theo ERD: idCardNumber, fullName, address, phone, email, description.
+ * Khách hàng (vừa profile vừa account đăng nhập).
  */
 @Entity
-@Table(name = "Client")
+@Table(
+        name = "Client",
+        uniqueConstraints = {@UniqueConstraint(name = "uk_client_phone", columnNames = "phone")})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,13 +27,12 @@ public class Client {
     @Column(nullable = false)
     private String fullName;
 
-    private String address;
-
-    @Column(unique = true, nullable = false)
-    private String email;
-
+    /** Đăng nhập / định danh JWT — mỗi số chỉ một tài khoản khách (ràng buộc uk_client_phone). */
+    @Column(nullable = false, length = 30)
     private String phone;
 
-    @Column(length = 500)
-    private String description;
+    @Column(nullable = false, length = 255)
+    private String passwordHash;
+
+    private String address;
 }

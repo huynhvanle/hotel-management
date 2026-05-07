@@ -14,18 +14,20 @@ public class HotelAdminResponse {
 
     private Integer id;
     private String name;
-    private Integer starLevel;
     private String address;
     private String description;
+    private String phone;
+    private String status;
 
     public static HotelAdminResponse fromEntity(Hotel h) {
         if (h == null) return null;
         return HotelAdminResponse.builder()
                 .id(h.getId())
                 .name(h.getName())
-                .starLevel(h.getStarLevel())
                 .address(h.getAddress())
                 .description(h.getDescription())
+                .phone(h.getPhone())
+                .status(h.getStatus())
                 .build();
     }
 }

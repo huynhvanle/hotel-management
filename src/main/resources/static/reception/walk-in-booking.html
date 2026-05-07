@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lễ tân · Đặt phòng tại quầy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/styles.css?v=20260507_navbar_btns" />
+  </head>
+  <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand fw-semibold" href="./index.html">Lễ tân</a>
+        <div class="ms-auto">
+          <button class="btn btn-outline-light btn-sm" id="btnLogout" type="button">Đăng xuất</button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container py-4">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <h1 class="h3 fw-semibold mb-0">Đặt phòng tại quầy</h1>
+        <button class="btn btn-primary btn-sm px-4 fw-semibold" type="submit" form="walkInRoomForm">Tìm kiếm phòng</button>
+      </div>
+
+      <div id="walkInTopAlert" class="alert d-none" role="alert"></div>
+
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+          <form id="walkInRoomForm" class="row g-3">
+            <div class="col-12 col-md-3">
+              <label class="form-label">Loại phòng</label>
+              <select class="form-select" name="type">
+                <option value="">Tất cả</option>
+                <option value="Standard">Standard</option>
+                <option value="Deluxe">Deluxe</option>
+                <option value="Suite">Suite</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Ngày đến</label>
+              <input class="form-control" type="date" name="checkin" autocomplete="off" required />
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Ngày đi</label>
+              <input class="form-control" type="date" name="checkout" autocomplete="off" required />
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Giá tối thiểu</label>
+              <input class="form-control" type="number" name="minPrice" min="0" placeholder="Tuỳ chọn" />
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Giá tối đa</label>
+              <input class="form-control" type="number" name="maxPrice" min="0" placeholder="Tuỳ chọn" />
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Tầng</label>
+              <input class="form-control" name="floor" inputmode="numeric" placeholder="Tuỳ chọn" />
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label">Số phòng</label>
+              <input class="form-control" name="roomNumber" inputmode="numeric" placeholder="Tuỳ chọn" />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div id="walkInRoomsAlert" class="alert alert-warning d-none mb-3"></div>
+
+      <div id="walkInCatalogSection" class="d-none">
+        <div class="row g-4 align-items-start">
+          <div class="col-lg-8">
+            <div id="walkInRoomsGrid" class="row g-3"></div>
+          </div>
+          <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-lg-top catalog-book-sidebar">
+              <div class="card-body">
+                <h2 class="h5 fw-semibold mb-2">Thông tin đặt phòng</h2>
+                <div id="walkInCatalogHotelLine" class="fw-semibold small mb-2">—</div>
+                <div id="walkInCatalogDateLine" class="small mb-3">—</div>
+                <div class="fw-semibold small mb-2">Thông tin phòng</div>
+                <div id="walkInCatalogLines" class="catalog-room-lines small mb-3 rounded-3 p-3">
+                  <span class="hm-muted">—</span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center catalog-sidebar-divider pt-3">
+                  <span class="fw-semibold">Tạm tính</span>
+                  <span id="walkInCatalogTotal" class="h5 mb-0 fw-semibold hm-text-gold">0 ₫</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-top border-dark border-opacity-10 mt-4 pt-4">
+          <div id="walkInSelectedClient" class="small text-muted mb-3"><span>Chưa chọn khách.</span></div>
+          <div class="d-flex flex-wrap gap-2 justify-content-lg-end justify-content-center">
+            <button type="button" class="btn btn-primary px-4 fw-semibold" id="walkInBtnOpenClientSearch">Tìm kiếm khách hàng</button>
+            <button type="button" class="btn btn-primary px-4 fw-semibold" id="walkInBtnSubmit">Xác nhận đặt phòng</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <div class="modal fade" id="walkInClientSearchModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title mb-0">Tìm kiếm khách hàng</h5>
+            <div class="d-flex flex-wrap gap-2 align-items-center ms-auto">
+              <button class="btn btn-primary btn-sm px-3 fw-semibold" type="button" id="walkInBtnAddClient">Thêm khách hàng</button>
+              <button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+          </div>
+          <div class="modal-body">
+            <form id="walkInClientSearchForm" class="row g-3 align-items-end">
+              <div class="col-12 col-md-4">
+                <label class="form-label">CCCD/Passport</label>
+                <input class="form-control" type="text" name="idCardNumber" placeholder="Số CCCD/HC" />
+              </div>
+              <div class="col-12 col-md-4">
+                <label class="form-label">Số điện thoại</label>
+                <input class="form-control" type="text" name="phone" placeholder="10 chữ số" />
+              </div>
+              <div class="col-12 col-md-4 d-grid">
+                <button class="btn btn-primary fw-semibold" type="submit">Tìm kiếm</button>
+              </div>
+            </form>
+            <div id="walkInClientAlert" class="alert alert-danger mt-3 d-none"></div>
+            <div class="table-responsive mt-3">
+              <table class="table align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Họ tên</th>
+                    <th>SĐT</th>
+                    <th>CCCD/Passport</th>
+                  </tr>
+                </thead>
+                <tbody id="walkInClientTbody">
+                  <tr><td colspan="4" class="text-muted">Nhập điều kiện rồi bấm Tìm kiếm.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Đóng</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="walkInAddClientModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Thêm khách hàng</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+          </div>
+          <div class="modal-body">
+            <div id="walkInAddClientAlert" class="alert alert-danger d-none"></div>
+            <form id="walkInAddClientForm" class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Họ tên</label>
+                <input class="form-control" name="fullName" required />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">Số điện thoại (10 chữ số)</label>
+                <input
+                  class="form-control"
+                  name="phone"
+                  required
+                  maxlength="10"
+                  pattern="\d{10}"
+                  inputmode="numeric"
+                  title="Nhập đúng 10 chữ số"
+                />
+              </div>
+              <div class="col-12 col-md-6">
+                <label class="form-label">CCCD/Passport (số)</label>
+                <input class="form-control" name="idCardNumber" required inputmode="numeric" />
+              </div>
+              <div class="col-12 d-grid">
+                <button class="btn btn-primary fw-semibold" type="submit" id="walkInBtnCreateClient">Thêm</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./reception-app.js?v=20260507_reception_role_gate"></script>
+  </body>
+</html>
